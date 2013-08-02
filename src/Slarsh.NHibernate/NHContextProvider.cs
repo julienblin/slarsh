@@ -122,38 +122,30 @@
         }
 
         /// <summary>
-        /// Executes an <see cref="IExecutable"/>.
+        /// Creates a query.
         /// </summary>
-        /// <param name="executable">
-        /// The executable.
-        /// </param>
-        public void Execute(IExecutable executable)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Executes an <see cref="IExecutable{T}"/> and return the results.
-        /// </summary>
-        /// <param name="executable">
-        /// The executable.
-        /// </param>
         /// <typeparam name="T">
-        /// The type of the result.
+        /// The type of query to create.
         /// </typeparam>
         /// <returns>
-        /// The <see cref="T"/>.
+        /// The query.
         /// </returns>
-        public T Execute<T>(IExecutable<T> executable)
+        public T CreateQuery<T>()
         {
-            var nhQuery = executable as INHQuery;
-            if (nhQuery == null)
+            if (!typeof(INHQuery).IsAssignableFrom(typeof(T)))
             {
                 throw new SlarshException(Resources.InternalError);
             }
-            
-            this.session.Flush();
-            return (T)nhQuery.InternalExecute(this);
+
+            try
+            {
+                return (T)Activator.CreateInstance(typeof(T), this.NHSession);
+            }
+            catch (Exception ex)
+            {
+                this.log.Error(Resources.ErrorWhileCreatingQuery.Format(typeof(T)), ex);
+                throw new SlarshException(Resources.ErrorWhileCreatingQuery.Format(typeof(T)), ex);
+            }
         }
 
         /// <summary>

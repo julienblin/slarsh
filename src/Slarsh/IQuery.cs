@@ -2,12 +2,9 @@
 {
     /// <summary>
     /// The Query interface.
-    /// A query is a specialized <see cref="IExecutable"/> that allows interrogation of data repositories. 
+    /// A query object allows the interrogation of the data repository.
     /// </summary>
-    /// <typeparam name="T">
-    /// The type of results
-    /// </typeparam>
-    public interface IQuery<out T> : IExecutable<T>
+    public interface IQuery
     {
     }
 }

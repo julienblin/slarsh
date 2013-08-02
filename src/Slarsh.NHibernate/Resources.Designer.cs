@@ -88,11 +88,11 @@ namespace Slarsh.NHibernate {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error while creating type {0}. It&apos;s probably because it does not have a public constructor with a single IContext argument..
+        ///   Looks up a localized string similar to Error while creating query {0}. It&apos;s probably because it does not have a public constructor with a single ISession argument..
         /// </summary>
-        internal static string ErrorWhileCreatingNHEntity {
+        internal static string ErrorWhileCreatingQuery {
             get {
-                return ResourceManager.GetString("ErrorWhileCreatingNHEntity", resourceCulture);
+                return ResourceManager.GetString("ErrorWhileCreatingQuery", resourceCulture);
             }
         }
         

@@ -1,6 +1,7 @@
 ﻿namespace Slarsh
 {
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// Default implementation for <see cref="IPaginationResult"/>.
@@ -72,6 +73,7 @@
     /// <typeparam name="T">
     /// The type of enumerable result.
     /// </typeparam>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Generic variant.")]
     public class PaginationResult<T> : PaginationResult, IPaginationResult<T>
     {
         /// <summary>

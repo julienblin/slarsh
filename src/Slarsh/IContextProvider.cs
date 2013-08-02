@@ -39,26 +39,15 @@
         T Get<T>(object id);
 
         /// <summary>
-        /// Executes an <see cref="IExecutable"/>.
+        /// Creates a query.
         /// </summary>
-        /// <param name="executable">
-        /// The executable.
-        /// </param>
-        void Execute(IExecutable executable);
-
-        /// <summary>
-        /// Executes an <see cref="IExecutable{T}"/> and return the results.
-        /// </summary>
-        /// <param name="executable">
-        /// The executable.
-        /// </param>
         /// <typeparam name="T">
-        /// The type of the result.
+        /// The type of query to create.
         /// </typeparam>
         /// <returns>
-        /// The <see cref="T"/>.
+        /// The query.
         /// </returns>
-        T Execute<T>(IExecutable<T> executable);
+        T CreateQuery<T>();
 
         /// <summary>
         /// Indicates whether this context provider takes care of the <paramref name="type"/>.

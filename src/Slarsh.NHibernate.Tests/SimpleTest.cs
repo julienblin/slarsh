@@ -38,13 +38,15 @@
                 var simpleEntity = new SimpleEntity { Name = "Foo" };
                 context.Add(simpleEntity);
 
-                var query = new SimpleEntityQuery { NameLike = "F" };
-                var queryResult = context.Execute(query);
+                var query = context.CreateQuery<SimpleEntityQuery>();
+                query.NameLike = "F";
+                query.OrderBy(x => x.Name);
 
-                queryResult.Result.Should().HaveCount(1);
+                var queryResult = query.Paginate();
                 queryResult.TotalItems.Should().Be(1);
                 queryResult.CurrentPage.Should().Be(1);
-                queryResult.PageSize.Should().Be(query.PaginationParams.PageSize);
+                queryResult.PageSize.Should().BeGreaterThan(0);
+                queryResult.Result.Should().HaveCount(1);
             }
         }
     }

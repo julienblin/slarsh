@@ -148,40 +148,22 @@
         }
 
         /// <summary>
-        /// Executes an <see cref="IExecutable"/>.
+        /// Creates a query.
         /// </summary>
-        /// <param name="executable">
-        /// The executable.
-        /// </param>
-        public void Execute(IExecutable executable)
-        {
-            var contextProvider = this.GetContextProviderFor(executable.GetType(), false);
-            if (contextProvider != null)
-            {
-                contextProvider.Execute(executable);
-            }
-            else
-            {
-                executable.Execute(this);
-            }
-        }
-
-        /// <summary>
-        /// Executes an <see cref="IExecutable{T}"/> and return the results.
-        /// </summary>
-        /// <param name="executable">
-        /// The executable.
-        /// </param>
         /// <typeparam name="T">
-        /// The type of the result.
+        /// The type of query to create.
         /// </typeparam>
         /// <returns>
-        /// The <see cref="T"/>.
+        /// The query.
         /// </returns>
-        public T Execute<T>(IExecutable<T> executable)
+        public T CreateQuery<T>()
         {
-            var contextProvider = this.GetContextProviderFor(executable.GetType(), false);
-            return contextProvider != null ? contextProvider.Execute(executable) : executable.Execute(this);
+            if (!this.IsReady)
+            {
+                throw new SlarshException(Resources.ContextIsNotReady);
+            }
+
+            return this.GetContextProviderFor(typeof(T)).CreateQuery<T>();
         }
 
         /// <summary>

@@ -60,12 +60,11 @@
     <Compile Include="IContextProviderFactory.cs" />
     <Compile Include="ICurrentContextHolder.cs" />
     <Compile Include="IEntity.cs" />
-    <Compile Include="IEnumerableQuery.cs" />
-    <Compile Include="IExecutable.cs" />
     <Compile Include="IPaginationParams.cs" />
     <Compile Include="IPaginationResult.cs" />
     <Compile Include="IQuery.cs" />
     <Compile Include="IValidatable.cs" />
+    <Compile Include="OrderType.cs" />
     <Compile Include="PaginationParams.cs" />
     <Compile Include="PaginationResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
