@@ -3,6 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slarsh", "Slarsh\Slarsh.csproj", "{5CBDD391-50C3-4767-8FF7-D68E5A8D8E6E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slarsh.NHibernate", "Slarsh.NHibernate\Slarsh.NHibernate.csproj", "{C7546ABC-A782-45C3-87A6-6D50A9F16869}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{71484BCC-BC2A-43D2-AFD3-129E679879AF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slarsh.NHibernate.Tests", "Slarsh.NHibernate.Tests\Slarsh.NHibernate.Tests.csproj", "{4A9B0B14-971B-481B-97EB-D4E2510C6C29}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slarsh.Tests", "Slarsh.Tests\Slarsh.Tests.csproj", "{DFE5AB12-20F8-470B-9CD7-8BA112403659}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,8 +21,24 @@ Global
 		{5CBDD391-50C3-4767-8FF7-D68E5A8D8E6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CBDD391-50C3-4767-8FF7-D68E5A8D8E6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5CBDD391-50C3-4767-8FF7-D68E5A8D8E6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7546ABC-A782-45C3-87A6-6D50A9F16869}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7546ABC-A782-45C3-87A6-6D50A9F16869}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7546ABC-A782-45C3-87A6-6D50A9F16869}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7546ABC-A782-45C3-87A6-6D50A9F16869}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A9B0B14-971B-481B-97EB-D4E2510C6C29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A9B0B14-971B-481B-97EB-D4E2510C6C29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A9B0B14-971B-481B-97EB-D4E2510C6C29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A9B0B14-971B-481B-97EB-D4E2510C6C29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFE5AB12-20F8-470B-9CD7-8BA112403659}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFE5AB12-20F8-470B-9CD7-8BA112403659}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFE5AB12-20F8-470B-9CD7-8BA112403659}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFE5AB12-20F8-470B-9CD7-8BA112403659}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4A9B0B14-971B-481B-97EB-D4E2510C6C29} = {71484BCC-BC2A-43D2-AFD3-129E679879AF}
+		{DFE5AB12-20F8-470B-9CD7-8BA112403659} = {71484BCC-BC2A-43D2-AFD3-129E679879AF}
 	EndGlobalSection
 EndGlobal
