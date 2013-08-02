@@ -64,11 +64,13 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="DatabaseType.cs" />
+    <Compile Include="INHQuery.cs" />
     <Compile Include="NHContextProvider.cs" />
     <Compile Include="NHContextProviderFactory.cs" />
     <Compile Include="NHContextProviderFactoryConfiguration.cs" />
     <Compile Include="NHEntity.cs" />
     <Compile Include="NHEntityMap.cs" />
+    <Compile Include="NHEnumerableQuery.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>

@@ -155,7 +155,15 @@
         /// </param>
         public void Execute(IExecutable executable)
         {
-            throw new NotImplementedException();
+            var contextProvider = this.GetContextProviderFor(executable.GetType(), false);
+            if (contextProvider != null)
+            {
+                contextProvider.Execute(executable);
+            }
+            else
+            {
+                executable.Execute(this);
+            }
         }
 
         /// <summary>
@@ -172,7 +180,8 @@
         /// </returns>
         public T Execute<T>(IExecutable<T> executable)
         {
-            throw new NotImplementedException();
+            var contextProvider = this.GetContextProviderFor(executable.GetType(), false);
+            return contextProvider != null ? contextProvider.Execute(executable) : executable.Execute(this);
         }
 
         /// <summary>
@@ -207,13 +216,16 @@
         /// <param name="type">
         /// The entity type.
         /// </param>
+        /// <param name="throwException">
+        /// True to throw an exception if not found, false otherwise.
+        /// </param>
         /// <returns>
         /// The <see cref="IContextProvider"/>.
         /// </returns>
         /// <exception cref="SlarshException">
         /// If no suitable <see cref="IContextProvider"/> found.
         /// </exception>
-        public IContextProvider GetContextProviderFor(Type type)
+        public IContextProvider GetContextProviderFor(Type type, bool throwException = true)
         {
             if (this.contextProviderEntityMapCache.ContainsKey(type))
             {
@@ -229,7 +241,12 @@
                 }
             }
 
-            throw new SlarshException(Resources.UnableToFindASuitableContextproviderFor.Format(type, string.Join(",", this.contextProviders)));
+            if (throwException)
+            {
+                throw new SlarshException(Resources.UnableToFindASuitableContextproviderFor.Format(type, string.Join(",", this.contextProviders)));
+            }
+
+            return null;
         }
 
         /// <summary>

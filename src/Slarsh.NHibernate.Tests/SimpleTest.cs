@@ -7,6 +7,7 @@
     using NUnit.Framework;
 
     using Slarsh.NHibernate.Tests.Entities;
+    using Slarsh.NHibernate.Tests.Queries;
 
     using NHProperty = global::NHibernate.Cfg.Environment;
 
@@ -16,20 +17,7 @@
         [Test]
         public void It_should_perform_a_basic_persistance_test()
         {
-            var nhContextProviderFactory = new NHContextProviderFactory(
-                new NHContextProviderFactoryConfiguration
-                    {
-                        DatabaseType = DatabaseType.SqLite,
-                        ConnectionString = "Data Source=test.db;Version=3;New=True;",
-                        MappingAssemblies = new[] { typeof(SimpleEntity).Assembly },
-                        AutoUpdateSchemaOnStart = true,
-                        NHProperties = new Dictionary<string, string>
-                        {
-                            { NHProperty.ShowSql, "true" },
-                            { NHProperty.FormatSql, "true" }
-                        }
-                    });
-            using (var contextFactory = ContextFactory.Start(new ContextFactoryConfiguration(nhContextProviderFactory)))
+            using (var contextFactory = ContextFactory.Start(new ContextFactoryConfiguration(SetupFixture.CreateNHContextProviderFactory())))
             using (var context = contextFactory.StartNewContext())
             {
                 var simpleEntity = new SimpleEntity { Name = "Foo" };
@@ -38,8 +26,25 @@
                 var entity = context.Get<SimpleEntity>(simpleEntity.Id);
 
                 entity.Should().Be(simpleEntity);
+            }
+        }
 
-                context.Commit();
+        [Test]
+        public void It_should_perform_a_basic_query()
+        {
+            using (var contextFactory = ContextFactory.Start(new ContextFactoryConfiguration(SetupFixture.CreateNHContextProviderFactory())))
+            using (var context = contextFactory.StartNewContext())
+            {
+                var simpleEntity = new SimpleEntity { Name = "Foo" };
+                context.Add(simpleEntity);
+
+                var query = new SimpleEntityQuery { NameLike = "F" };
+                var queryResult = context.Execute(query);
+
+                queryResult.Result.Should().HaveCount(1);
+                queryResult.TotalItems.Should().Be(1);
+                queryResult.CurrentPage.Should().Be(1);
+                queryResult.PageSize.Should().Be(query.PaginationParams.PageSize);
             }
         }
     }

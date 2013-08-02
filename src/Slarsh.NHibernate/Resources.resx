@@ -129,6 +129,9 @@
   <data name="ErrorWhileCreatingNHEntity" xml:space="preserve">
     <value>Error while creating type {0}. It's probably because it does not have a public constructor with a single IContext argument.</value>
   </data>
+  <data name="InternalError" xml:space="preserve">
+    <value>Internal error.</value>
+  </data>
   <data name="NHConfiguration" xml:space="preserve">
     <value>NHibernate configuration</value>
   </data>

@@ -109,12 +109,15 @@
         /// <param name="type">
         /// The entity type.
         /// </param>
+        /// <param name="throwException">
+        /// True to throw an exception if not found, false otherwise.
+        /// </param>
         /// <returns>
         /// The <see cref="IContextProvider"/>.
         /// </returns>
         /// <exception cref="SlarshException">
         /// If no suitable <see cref="IContextProvider"/> found.
         /// </exception>
-        IContextProvider GetContextProviderFor(Type type);
+        IContextProvider GetContextProviderFor(Type type, bool throwException = true);
     }
 }

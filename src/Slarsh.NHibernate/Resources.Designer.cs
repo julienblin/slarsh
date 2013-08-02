@@ -97,6 +97,15 @@ namespace Slarsh.NHibernate {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Internal error..
+        /// </summary>
+        internal static string InternalError {
+            get {
+                return ResourceManager.GetString("InternalError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to NHibernate configuration.
         /// </summary>
         internal static string NHConfiguration {

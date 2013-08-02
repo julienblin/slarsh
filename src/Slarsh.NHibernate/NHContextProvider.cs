@@ -146,7 +146,14 @@
         /// </returns>
         public T Execute<T>(IExecutable<T> executable)
         {
-            throw new NotImplementedException();
+            var nhQuery = executable as INHQuery;
+            if (nhQuery == null)
+            {
+                throw new SlarshException(Resources.InternalError);
+            }
+            
+            this.session.Flush();
+            return (T)nhQuery.InternalExecute(this);
         }
 
         /// <summary>
@@ -161,7 +168,7 @@
         /// </returns>
         public bool TakesCareOf(Type type)
         {
-            return typeof(NHEntity).IsAssignableFrom(type);
+            return typeof(NHEntity).IsAssignableFrom(type) || typeof(INHQuery).IsAssignableFrom(type);
         }
 
         /// <summary>
