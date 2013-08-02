@@ -4,11 +4,11 @@
 
     using FluentAssertions;
 
-    using NHProperty = global::NHibernate.Cfg.Environment;
-
     using NUnit.Framework;
 
     using Slarsh.NHibernate.Tests.Entities;
+
+    using NHProperty = global::NHibernate.Cfg.Environment;
 
     [TestFixture]
     public class SimpleTest

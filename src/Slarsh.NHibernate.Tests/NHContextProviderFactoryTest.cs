@@ -1,9 +1,5 @@
 ﻿namespace Slarsh.NHibernate.Tests
 {
-    using System.ComponentModel.DataAnnotations;
-
-    using FluentAssertions;
-
     using NUnit.Framework;
 
     [TestFixture]

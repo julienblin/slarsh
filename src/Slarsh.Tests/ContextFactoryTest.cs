@@ -17,7 +17,7 @@
             var contextProviderFactory2 = new Mock<IContextProviderFactory>();
             contextProviderFactory2.Setup(x => x.Start(null));
 
-            using (ContextFactory.Start(new ContextFactoryConfiguration { ContextProviderFactories = new [] { contextProviderFactory1.Object, contextProviderFactory2.Object } }))
+            using (ContextFactory.Start(new ContextFactoryConfiguration { ContextProviderFactories = new[] { contextProviderFactory1.Object, contextProviderFactory2.Object } }))
             {
                 contextProviderFactory1.Verify(x => x.Start(It.IsAny<IContextFactory>()));
                 contextProviderFactory2.Verify(x => x.Start(It.IsAny<IContextFactory>()));

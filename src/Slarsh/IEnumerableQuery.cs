@@ -6,7 +6,7 @@
     /// <typeparam name="T">
     /// The type of enumerated results.
     /// </typeparam>
-    public interface IEnumerableQuery<T> : IQuery<IPaginationResult<T>>
+    public interface IEnumerableQuery<out T> : IQuery<IPaginationResult<T>>
     {
     }
 }
