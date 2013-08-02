@@ -11,7 +11,8 @@
     using Slarsh.Utilities;
 
     /// <summary>
-    /// Default implementation for <see cref="IContextFactory"/>.
+    /// The Context Factory is the main entry point for <c>Slarsh</c>.
+    /// It must be unique per application container, usually configured and started at the beginning.
     /// </summary>
     public class ContextFactory : IContextFactory
     {
@@ -19,6 +20,11 @@
         /// The sync root for thread safety.
         /// </summary>
         private static readonly object SyncRoot = new object();
+
+        /// <summary>
+        /// The current context holder.
+        /// </summary>
+        private static ICurrentContextHolder currentContextHolder;
 
         /// <summary>
         /// The logger.
@@ -33,23 +39,13 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="ContextFactory"/> class.
         /// </summary>
-        /// <param name="contextProviderFactory">
-        /// The main <see cref="IContextProviderFactory"/>.
+        /// <param name="configuration">
+        /// The configuration.
         /// </param>
-        public ContextFactory(IContextProviderFactory contextProviderFactory)
-            : this(new[] { contextProviderFactory })
+        protected ContextFactory(ContextFactoryConfiguration configuration)
         {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ContextFactory"/> class.
-        /// </summary>
-        /// <param name="contextProviderFactories">
-        /// The list of <see cref="IContextProviderFactory"/>.
-        /// </param>
-        public ContextFactory(IEnumerable<IContextProviderFactory> contextProviderFactories)
-        {
-            this.contextProviderFactories = contextProviderFactories.ToList();
+            configuration.EnforceValidation();
+            this.contextProviderFactories = configuration.ContextProviderFactories.ToList();
             this.IsReady = false;
         }
 
@@ -78,33 +74,25 @@
         }
 
         /// <summary>
-        /// The starts the <see cref="IContextFactory"/>.
-        /// Must be called prior to <see cref="IContextFactory.StartNewContext()"/>.
+        /// Starts the context factory. Must be called prior to anything.
         /// </summary>
-        public void Start()
+        /// <param name="configuration">
+        /// The configuration.
+        /// </param>
+        /// <returns>
+        /// The <see cref="IContextFactory"/>.
+        /// </returns>
+        public static IContextFactory Start(ContextFactoryConfiguration configuration)
         {
-            lock (SyncRoot)
+            if (configuration == null)
             {
-                if (this.IsReady)
-                {
-                    throw new SlarshException(Resources.CannotStartContextFactoryIfStarted);
-                }
-
-                using (new StopwatchLogScope(this.log, Resources.Starting, Resources.StartedIn, this))
-                {
-                    try
-                    {
-                        Parallel.ForEach(this.contextProviderFactories, factory => factory.Start(this));
-                    }
-                    catch (AggregateException ex)
-                    {
-                        this.log.Fatal(Resources.ErrorWhileStartingProviderFactories, ex);
-                        throw new SlarshException(Resources.ErrorWhileStartingProviderFactories, ex);
-                    }
-
-                    this.IsReady = true;
-                }
+                throw new ArgumentNullException("configuration");
             }
+
+            currentContextHolder = configuration.CurrentContextHolder;
+            var contextFactory = new ContextFactory(configuration);
+            contextFactory.Start();
+            return contextFactory;
         }
 
         /// <summary>
@@ -140,6 +128,7 @@
             var context = new Context(this);
             this.log.Debug(Resources.Starting.Format(context));
             context.Start(transactionScopeOption, transactionOptions);
+            SetCurrentContext(context);
             return context;
         }
 
@@ -151,6 +140,68 @@
         {
             this.Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Gets the current context.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="IContext"/>.
+        /// </returns>
+        internal static IContext GetCurrentContext()
+        {
+            if (currentContextHolder == null)
+            {
+                throw new SlarshException(Resources.NoCurrentContextHolder);
+            }
+
+            return currentContextHolder.GetCurrentContext();
+        }
+
+        /// <summary>
+        /// Sets the current context.
+        /// </summary>
+        /// <param name="context">
+        /// The current context.
+        /// </param>
+        internal static void SetCurrentContext(IContext context)
+        {
+            if (currentContextHolder == null)
+            {
+                throw new SlarshException(Resources.NoCurrentContextHolder);
+            }
+
+            currentContextHolder.SetCurrentContext(context);
+        }
+
+        /// <summary>
+        /// The starts the <see cref="IContextFactory"/>.
+        /// Must be called prior to <see cref="IContextFactory.StartNewContext()"/>.
+        /// </summary>
+        protected void Start()
+        {
+            lock (SyncRoot)
+            {
+                if (this.IsReady)
+                {
+                    throw new SlarshException(Resources.CannotStartContextFactoryIfStarted);
+                }
+
+                using (new StopwatchLogScope(this.log, Resources.Starting, Resources.StartedIn, this))
+                {
+                    try
+                    {
+                        Parallel.ForEach(this.contextProviderFactories, factory => factory.Start(this));
+                    }
+                    catch (AggregateException ex)
+                    {
+                        this.log.Fatal(Resources.ErrorWhileStartingProviderFactories, ex);
+                        throw new SlarshException(Resources.ErrorWhileStartingProviderFactories, ex);
+                    }
+
+                    this.IsReady = true;
+                }
+            }
         }
 
         /// <summary>

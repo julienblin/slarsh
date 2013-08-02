@@ -141,6 +141,9 @@
   <data name="ErrorWhileStartingProviderFactories" xml:space="preserve">
     <value>Error while Starting provider factories.</value>
   </data>
+  <data name="NoCurrentContextHolder" xml:space="preserve">
+    <value>No ICurrentContextHolder has been defined.</value>
+  </data>
   <data name="Started" xml:space="preserve">
     <value>{0} started.</value>
   </data>

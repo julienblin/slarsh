@@ -21,12 +21,6 @@
         IEnumerable<IContextProviderFactory> ContextProviderFactories { get; }
 
         /// <summary>
-        /// The starts the <see cref="IContextFactory"/>.
-        /// Must be called prior to <see cref="StartNewContext()"/>.
-        /// </summary>
-        void Start();
-
-        /// <summary>
         /// Creates and starts a new context with default options (TransactionScopeOption.Required, new TransactionOptions()).
         /// </summary>
         /// <returns>

@@ -79,6 +79,24 @@ namespace Slarsh.NHibernate {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Can only create NHEntities. Actual type: {0}..
+        /// </summary>
+        internal static string CanOnlyCreateNHEntities {
+            get {
+                return ResourceManager.GetString("CanOnlyCreateNHEntities", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error while creating type {0}. It&apos;s probably because it does not have a public constructor with a single IContext argument..
+        /// </summary>
+        internal static string ErrorWhileCreatingNHEntity {
+            get {
+                return ResourceManager.GetString("ErrorWhileCreatingNHEntity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to NHibernate configuration.
         /// </summary>
         internal static string NHConfiguration {

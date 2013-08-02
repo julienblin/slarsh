@@ -53,10 +53,12 @@
     </Compile>
     <Compile Include="Context.cs" />
     <Compile Include="ContextFactory.cs" />
+    <Compile Include="ContextFactoryConfiguration.cs" />
     <Compile Include="IContext.cs" />
     <Compile Include="IContextFactory.cs" />
     <Compile Include="IContextProvider.cs" />
     <Compile Include="IContextProviderFactory.cs" />
+    <Compile Include="ICurrentContextHolder.cs" />
     <Compile Include="IEntity.cs" />
     <Compile Include="IEnumerableQuery.cs" />
     <Compile Include="IExecutable.cs" />
@@ -70,6 +72,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="SingleThreadCurrentContextHolder.cs" />
     <Compile Include="SlarshException.cs" />
     <Compile Include="StringExtensions.cs" />
     <Compile Include="Utilities\StopwatchLogScope.cs" />

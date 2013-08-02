@@ -15,6 +15,11 @@
 #pragma warning restore 649
 
         /// <summary>
+        /// Gets the current context.
+        /// </summary>
+        public virtual IContext Context { get; private set; }
+
+        /// <summary>
         /// Gets the id.
         /// </summary>
         public virtual Guid Id

@@ -29,21 +29,17 @@
                             { NHProperty.FormatSql, "true" }
                         }
                     });
-            using (var contextFactory = new ContextFactory(nhContextProviderFactory))
+            using (var contextFactory = ContextFactory.Start(new ContextFactoryConfiguration(nhContextProviderFactory)))
+            using (var context = contextFactory.StartNewContext())
             {
-                contextFactory.Start();
+                var simpleEntity = new SimpleEntity { Name = "Foo" };
+                context.Add(simpleEntity);
 
-                using (var context = contextFactory.StartNewContext())
-                {
-                    var simpleEntity = new SimpleEntity { Name = "Foo" };
-                    context.Add(simpleEntity);
+                var entity = context.Get<SimpleEntity>(simpleEntity.Id);
 
-                    var entity = context.Get<SimpleEntity>(simpleEntity.Id);
+                entity.Should().Be(simpleEntity);
 
-                    entity.Should().Be(simpleEntity);
-
-                    context.Commit();
-                }
+                context.Commit();
             }
         }
     }

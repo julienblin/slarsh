@@ -17,10 +17,8 @@
             var contextProviderFactory2 = new Mock<IContextProviderFactory>();
             contextProviderFactory2.Setup(x => x.Start(null));
 
-            using (var contextFactory = new ContextFactory(new[] { contextProviderFactory1.Object, contextProviderFactory2.Object }))
+            using (ContextFactory.Start(new ContextFactoryConfiguration { ContextProviderFactories = new [] { contextProviderFactory1.Object, contextProviderFactory2.Object } }))
             {
-                contextFactory.Start();
-
                 contextProviderFactory1.Verify(x => x.Start(It.IsAny<IContextFactory>()));
                 contextProviderFactory2.Verify(x => x.Start(It.IsAny<IContextFactory>()));
             }
@@ -33,8 +31,7 @@
             contextProviderFactory1.Setup(x => x.Dispose());
             var contextProviderFactory2 = new Mock<IContextProviderFactory>();
             contextProviderFactory2.Setup(x => x.Dispose());
-            var contextFactory =
-                new ContextFactory(new[] { contextProviderFactory1.Object, contextProviderFactory2.Object });
+            var contextFactory = ContextFactory.Start(new ContextFactoryConfiguration { ContextProviderFactories = new[] { contextProviderFactory1.Object, contextProviderFactory2.Object } });
 
             contextFactory.Dispose();
 
@@ -51,9 +48,8 @@
             var contextProviderFactory2 = new Mock<IContextProviderFactory>();
             contextProviderFactory2.Setup(x => x.CreateContextProvider(null)).Returns(contextProvider.Object);
 
-            using (var contextFactory = new ContextFactory(new[] { contextProviderFactory1.Object, contextProviderFactory2.Object }))
+            using (var contextFactory = ContextFactory.Start(new ContextFactoryConfiguration { ContextProviderFactories = new[] { contextProviderFactory1.Object, contextProviderFactory2.Object } }))
             {
-                contextFactory.Start();
                 var context = contextFactory.StartNewContext();
 
                 contextProviderFactory1.Verify(x => x.CreateContextProvider(It.IsAny<IContext>()));
@@ -62,16 +58,5 @@
                 context.ContextFactory.Should().Be(contextFactory);
             }
         }
-
-        [Test]
-        public void It_should_not_create_context_if_not_ready()
-        {
-            var contextFactory = new ContextFactory(new IContextProviderFactory[0]);
-
-            contextFactory.Invoking(x => x.StartNewContext())
-                          .ShouldThrow<SlarshException>()
-                          .WithMessage("started", ComparisonMode.Substring);
-        }
-
     }
 }

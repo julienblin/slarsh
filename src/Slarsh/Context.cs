@@ -10,7 +10,7 @@
     /// <summary>
     /// Default implementation for <see cref="IContext"/>.
     /// </summary>
-    internal class Context : IContext
+    public class Context : IContext
     {
         /// <summary>
         /// The context providers.
@@ -38,7 +38,7 @@
         /// <param name="contextFactory">
         /// The context factory.
         /// </param>
-        public Context(IContextFactory contextFactory)
+        internal Context(IContextFactory contextFactory)
         {
             this.Id = Guid.NewGuid();
             this.IsReady = false;
@@ -54,6 +54,22 @@
         ~Context()
         {
             this.Dispose(false);
+        }
+
+        /// <summary>
+        /// Gets or sets the current context.
+        /// </summary>
+        public static IContext Current
+        {
+            get
+            {
+                return Slarsh.ContextFactory.GetCurrentContext();
+            }
+
+            set
+            {
+                Slarsh.ContextFactory.SetCurrentContext(value);
+            }
         }
 
         /// <summary>
@@ -256,6 +272,7 @@
 
                 this.transactionScope.Dispose();
                 this.IsReady = false;
+                Current = null;
             }
         }
     }

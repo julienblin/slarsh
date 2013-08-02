@@ -6,5 +6,9 @@
     /// </summary>
     public interface IEntity : IValidatable
     {
+        /// <summary>
+        /// Gets the current context.
+        /// </summary>
+        IContext Context { get; }
     }
 }

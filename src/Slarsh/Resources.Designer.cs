@@ -133,6 +133,15 @@ namespace Slarsh {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No ICurrentContextHolder has been defined..
+        /// </summary>
+        internal static string NoCurrentContextHolder {
+            get {
+                return ResourceManager.GetString("NoCurrentContextHolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} started..
         /// </summary>
         internal static string Started {

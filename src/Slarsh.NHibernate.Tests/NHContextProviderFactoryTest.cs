@@ -10,6 +10,7 @@
     public class NHContextProviderFactoryTest
     {
         [Test]
+        [ExpectedException(typeof(SlarshException))]
         public void It_should_validate_connection_string()
         {
             var nhContextProviderFactory = new NHContextProviderFactory(
@@ -17,10 +18,8 @@
                     {
                         DatabaseType = DatabaseType.SqLite
                     });
-            using (var contextFactory = new ContextFactory(nhContextProviderFactory))
-            {
-                contextFactory.Invoking(x => x.Start()).ShouldThrow<SlarshException>();
-            }
+
+            ContextFactory.Start(new ContextFactoryConfiguration(nhContextProviderFactory));
         }
     }
 }
