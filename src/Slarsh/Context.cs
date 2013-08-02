@@ -3,8 +3,13 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
+    using System.Transactions;
 
+    using Common.Logging;
+
+    /// <summary>
+    /// Default implementation for <see cref="IContext"/>.
+    /// </summary>
     internal class Context : IContext
     {
         /// <summary>
@@ -12,12 +17,20 @@
         /// </summary>
         private readonly IEnumerable<IContextProvider> contextProviders;
 
+        /// <summary>
+        /// The context provider entity map cache.
+        /// </summary>
         private readonly IDictionary<Type, IContextProvider> contextProviderEntityMapCache;
 
         /// <summary>
         /// The logger.
         /// </summary>
-        private ILogger logger;
+        private readonly ILog log = LogManager.GetCurrentClassLogger();
+
+        /// <summary>
+        /// The transaction scope.
+        /// </summary>
+        private TransactionScope transactionScope;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Context"/> class.
@@ -25,14 +38,12 @@
         /// <param name="contextFactory">
         /// The context factory.
         /// </param>
-        /// <param name="contextProviders">
-        /// The context providers.
-        /// </param>
-        public Context(IContextFactory contextFactory, IEnumerable<IContextProvider> contextProviders)
+        public Context(IContextFactory contextFactory)
         {
+            this.Id = Guid.NewGuid();
             this.IsReady = false;
             this.ContextFactory = contextFactory;
-            this.contextProviders = contextProviders.ToList();
+            this.contextProviders = contextFactory.ContextProviderFactories.Select(x => x.CreateContextProvider(this)).ToList();
             this.Values = new Dictionary<string, object>();
             this.contextProviderEntityMapCache = new Dictionary<Type, IContextProvider>();
         }
@@ -46,22 +57,32 @@
         }
 
         /// <summary>
-        /// Gets the logger.
+        /// Gets the unique id of this context.
         /// </summary>
-        public ILogger Logger
-        {
-            get
-            {
-                return this.logger ?? (this.logger = DefaultLogger.Instance);
-            }
-        }
+        public Guid Id { get; private set; }
 
+        /// <summary>
+        /// Gets a value indicating whether the context is ready (started and not disposed or committed).
+        /// </summary>
         public bool IsReady { get; private set; }
 
+        /// <summary>
+        /// Gets the <see cref="IContextFactory"/> that this context was created from.
+        /// </summary>
         public IContextFactory ContextFactory { get; private set; }
 
+        /// <summary>
+        /// Gets the values dictionary associated with the context.
+        /// Allows the storage of various contextual information.
+        /// </summary>
         public IDictionary<string, object> Values { get; private set; }
 
+        /// <summary>
+        /// Adds an entity to the context.
+        /// </summary>
+        /// <param name="entity">
+        /// The entity.
+        /// </param>
         public void Add(IEntity entity)
         {
             if (!this.IsReady)
@@ -72,6 +93,12 @@
             this.GetContextProviderFor(entity.GetType()).Add(entity);
         }
 
+        /// <summary>
+        /// Removes an entity from the context.
+        /// </summary>
+        /// <param name="entity">
+        /// The entity.
+        /// </param>
         public void Remove(IEntity entity)
         {
             if (!this.IsReady)
@@ -82,6 +109,18 @@
             this.GetContextProviderFor(entity.GetType()).Remove(entity);
         }
 
+        /// <summary>
+        /// Gets an entity by its id.
+        /// </summary>
+        /// <param name="id">
+        /// The entity id.
+        /// </param>
+        /// <typeparam name="T">
+        /// The type of entity.
+        /// </typeparam>
+        /// <returns>
+        /// The entity.
+        /// </returns>
         public T Get<T>(object id)
         {
             if (!this.IsReady)
@@ -92,43 +131,57 @@
             return this.GetContextProviderFor(typeof(T)).Get<T>(id);
         }
 
+        /// <summary>
+        /// Executes an <see cref="IExecutable"/>.
+        /// </summary>
+        /// <param name="executable">
+        /// The executable.
+        /// </param>
         public void Execute(IExecutable executable)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Executes an <see cref="IExecutable{T}"/> and return the results.
+        /// </summary>
+        /// <param name="executable">
+        /// The executable.
+        /// </param>
+        /// <typeparam name="T">
+        /// The type of the result.
+        /// </typeparam>
+        /// <returns>
+        /// The <see cref="T"/>.
+        /// </returns>
         public T Execute<T>(IExecutable<T> executable)
         {
             throw new NotImplementedException();
         }
 
-        public void Start()
+        /// <summary>
+        /// Starts the context.
+        /// </summary>
+        /// <param name="transactionScopeOption">
+        /// The transaction scope option.
+        /// </param>
+        /// <param name="transactionOptions">
+        /// The transaction options.
+        /// </param>
+        public void Start(TransactionScopeOption transactionScopeOption, TransactionOptions transactionOptions)
         {
-            foreach (var contextProvider in this.contextProviders)
-            {
-                contextProvider.Start();
-            }
-
+            this.transactionScope = new TransactionScope(transactionScopeOption, transactionOptions);
             this.IsReady = true;
         }
 
+        /// <summary>
+        /// Commits the context and thus the underlying transaction.
+        /// If a context is not committed before it is disposed, it will rollback.
+        /// </summary>
         public void Commit()
         {
-            foreach (var contextProvider in this.contextProviders)
-            {
-                contextProvider.Commit();
-            }
-
-            this.IsReady = false;
-        }
-
-        public void Rollback()
-        {
-            foreach (var contextProvider in this.contextProviders)
-            {
-                contextProvider.Rollback();
-            }
-
+            this.log.Debug(Resources.Committing.Format(this));
+            this.transactionScope.Dispose();
             this.IsReady = false;
         }
 
@@ -173,6 +226,18 @@
         }
 
         /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>
+        /// A string that represents the current object.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
+        public override string ToString()
+        {
+            return "Context({0})".Format(this.Id);
+        }
+
+        /// <summary>
         /// Dispose appropriate resources.
         /// </summary>
         /// <param name="disposing">
@@ -182,11 +247,14 @@
         {
             if (disposing)
             {
+                this.log.Debug(Resources.Disposing.Format(this));
+
                 foreach (var contextProvider in this.contextProviders)
                 {
                     contextProvider.Dispose();
                 }
 
+                this.transactionScope.Dispose();
                 this.IsReady = false;
             }
         }

@@ -126,11 +126,14 @@
   <data name="CannotStartContextFactoryIfStarted" xml:space="preserve">
     <value>You cannot start the context factory when it has been started.</value>
   </data>
+  <data name="Committing" xml:space="preserve">
+    <value>Committing {0}...</value>
+  </data>
   <data name="ContextIsNotReady" xml:space="preserve">
     <value>The context is not ready. It is either not started or disposed.</value>
   </data>
-  <data name="CreatingContext" xml:space="preserve">
-    <value>Creating context...</value>
+  <data name="Disposing" xml:space="preserve">
+    <value>Disposing {0}...</value>
   </data>
   <data name="ErrorWhileDisposing" xml:space="preserve">
     <value>Error while disposing {0}.</value>

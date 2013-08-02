@@ -3,8 +3,13 @@
     using System;
     using System.Diagnostics;
 
+    using Common.Logging;
+
     using NH = global::NHibernate;
 
+    /// <summary>
+    /// NHibernate <see cref="IContextProvider"/>. Binds to a <see cref="NH.ISession"/>.
+    /// </summary>
     public class NHContextProvider : IContextProvider
     {
         /// <summary>
@@ -12,16 +17,36 @@
         /// </summary>
         private readonly NHContextProviderFactory nhContextProviderFactory;
 
-        private NH.ISession session;
+        /// <summary>
+        /// The context.
+        /// </summary>
+        private readonly IContext context;
+
+        /// <summary>
+        /// The session.
+        /// </summary>
+        private readonly NH.ISession session;
 
         /// <summary>
         /// The logger.
         /// </summary>
-        private ILogger logger;
+        private readonly ILog log = LogManager.GetCurrentClassLogger();
 
-        public NHContextProvider(NHContextProviderFactory nhContextProviderFactory)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NHContextProvider"/> class.
+        /// </summary>
+        /// <param name="nhContextProviderFactory">
+        /// The <see cref="NHContextProviderFactory"/>.
+        /// </param>
+        /// <param name="context">
+        /// The context.
+        /// </param>
+        public NHContextProvider(NHContextProviderFactory nhContextProviderFactory, IContext context)
         {
             this.nhContextProviderFactory = nhContextProviderFactory;
+            this.context = context;
+            this.session = this.nhContextProviderFactory.SessionFactory.OpenSession();
+            this.log.Debug(Resources.SessionOpened.Format(this.session));
         }
 
         /// <summary>
@@ -33,104 +58,110 @@
         }
 
         /// <summary>
-        /// Gets the logger.
+        /// Gets the <see cref="IContext"/>.
         /// </summary>
-        public ILogger Logger
+        public IContext Context
         {
             get
             {
-                return this.logger ?? (this.logger = DefaultLogger.Instance);
+                return this.context;
             }
         }
 
+        /// <summary>
+        /// Gets the NHibernate <see cref="NH.ISession"/>.
+        /// </summary>
+        public NH.ISession NHSession
+        {
+            get
+            {
+                return this.session;
+            }
+        }
+
+        /// <summary>
+        /// Adds an entity.
+        /// </summary>
+        /// <param name="entity">
+        /// The entity.
+        /// </param>
         public void Add(IEntity entity)
         {
             Debug.Assert(this.session != null, "this.session != null");
             this.session.Save(entity);
         }
 
+        /// <summary>
+        /// Removes an entity.
+        /// </summary>
+        /// <param name="entity">
+        /// The entity.
+        /// </param>
         public void Remove(IEntity entity)
         {
             Debug.Assert(this.session != null, "this.session != null");
             this.session.Delete(entity);
         }
 
+        /// <summary>
+        /// Gets an entity by its id.
+        /// </summary>
+        /// <param name="id">
+        /// The entity id.
+        /// </param>
+        /// <typeparam name="T">
+        /// The type of entity.
+        /// </typeparam>
+        /// <returns>
+        /// The entity.
+        /// </returns>
         public T Get<T>(object id)
         {
             Debug.Assert(this.session != null, "this.session != null");
             return this.session.Get<T>(id);
         }
 
+        /// <summary>
+        /// Executes an <see cref="IExecutable"/>.
+        /// </summary>
+        /// <param name="executable">
+        /// The executable.
+        /// </param>
         public void Execute(IExecutable executable)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Executes an <see cref="IExecutable{T}"/> and return the results.
+        /// </summary>
+        /// <param name="executable">
+        /// The executable.
+        /// </param>
+        /// <typeparam name="T">
+        /// The type of the result.
+        /// </typeparam>
+        /// <returns>
+        /// The <see cref="T"/>.
+        /// </returns>
         public T Execute<T>(IExecutable<T> executable)
         {
             throw new NotImplementedException();
         }
 
-        public void Start()
-        {
-            this.session = this.nhContextProviderFactory.SessionFactory.OpenSession();
-            if (this.MustNotStartTransaction())
-            {
-                return;
-            }
-
-            this.session.BeginTransaction(this.nhContextProviderFactory.Configuration.IsolationLevel);
-        }
-
-        public void Commit()
-        {
-            if (this.session == null)
-            {
-                throw new SlarshException(Resources.CannotCommitNoSession);
-            }
-
-            if (this.MustNotStartTransaction())
-            {
-                return;
-            }
-
-            if (!this.session.Transaction.IsActive)
-            {
-                throw new SlarshException(Resources.CannotCommitTransactionInactive);
-            }
-
-            this.session.Transaction.Commit();
-        }
-
-        public void Rollback()
-        {
-            if (this.session == null)
-            {
-                throw new SlarshException(Resources.CannotRollbackNoSession);
-            }
-
-            if (this.MustNotStartTransaction())
-            {
-                return;
-            }
-
-            if (!this.session.Transaction.IsActive)
-            {
-                throw new SlarshException(Resources.CannotRollbackTransactionInactive);
-            }
-
-            this.session.Transaction.Rollback();
-        }
-
+        /// <summary>
+        /// Indicates whether this context provider takes care of the <paramref name="type"/>.
+        /// Accepted types: <see cref="NHEntity"/>.
+        /// </summary>
+        /// <param name="type">
+        /// The type.
+        /// </param>
+        /// <returns>
+        /// True if it can handle it, false otherwise.
+        /// </returns>
         public bool TakesCareOf(Type type)
         {
-            return this.nhContextProviderFactory.SessionFactory.GetClassMetadata(type) != null;
-        }
-
-        public void Flush()
-        {
-            Debug.Assert(this.session != null, "this.session != null");
-            this.session.Flush();
+            return typeof(NHEntity).IsAssignableFrom(type);
         }
 
         /// <summary>
@@ -154,31 +185,9 @@
             {
                 if (this.session != null)
                 {
-                    if (!this.session.Transaction.IsActive)
-                    {
-                        this.Logger.Warn(Resources.SessionDisposedTransactionActive);
-                    }
-
                     this.session.Dispose();
                 }
             }
-        }
-
-        /// <summary>
-        /// Creates the <see cref="NH.ISession"/>.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="NH.ISession"/>.
-        /// </returns>
-        protected virtual NH.ISession CreateSession()
-        {
-            return this.nhContextProviderFactory.SessionFactory.OpenSession();
-        }
-
-        protected virtual bool MustNotStartTransaction()
-        {
-            return this.nhContextProviderFactory.Configuration.DatabaseType == DatabaseType.SQLite
-                    && string.IsNullOrEmpty(this.nhContextProviderFactory.Configuration.ConnectionString);
         }
     }
 }

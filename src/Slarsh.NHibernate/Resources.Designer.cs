@@ -79,42 +79,6 @@ namespace Slarsh.NHibernate {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot commit be cause the context provider has not been started..
-        /// </summary>
-        internal static string CannotCommitNoSession {
-            get {
-                return ResourceManager.GetString("CannotCommitNoSession", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot commit be cause the transaction is inactive..
-        /// </summary>
-        internal static string CannotCommitTransactionInactive {
-            get {
-                return ResourceManager.GetString("CannotCommitTransactionInactive", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot rollback be cause the context provider has not been started..
-        /// </summary>
-        internal static string CannotRollbackNoSession {
-            get {
-                return ResourceManager.GetString("CannotRollbackNoSession", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot rollback be cause the transaction is inactive..
-        /// </summary>
-        internal static string CannotRollbackTransactionInactive {
-            get {
-                return ResourceManager.GetString("CannotRollbackTransactionInactive", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to NHibernate configuration.
         /// </summary>
         internal static string NHConfiguration {
@@ -124,11 +88,11 @@ namespace Slarsh.NHibernate {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Session was disposed with an active transaction..
+        ///   Looks up a localized string similar to Session {0} opened..
         /// </summary>
-        internal static string SessionDisposedTransactionActive {
+        internal static string SessionOpened {
             get {
-                return ResourceManager.GetString("SessionDisposedTransactionActive", resourceCulture);
+                return ResourceManager.GetString("SessionOpened", resourceCulture);
             }
         }
     }

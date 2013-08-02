@@ -123,22 +123,10 @@
   <data name="BuiltIn" xml:space="preserve">
     <value>{0} built in {1} ms.</value>
   </data>
-  <data name="CannotCommitNoSession" xml:space="preserve">
-    <value>Cannot commit be cause the context provider has not been started.</value>
-  </data>
-  <data name="CannotCommitTransactionInactive" xml:space="preserve">
-    <value>Cannot commit be cause the transaction is inactive.</value>
-  </data>
-  <data name="CannotRollbackNoSession" xml:space="preserve">
-    <value>Cannot rollback be cause the context provider has not been started.</value>
-  </data>
-  <data name="CannotRollbackTransactionInactive" xml:space="preserve">
-    <value>Cannot rollback be cause the transaction is inactive.</value>
-  </data>
   <data name="NHConfiguration" xml:space="preserve">
     <value>NHibernate configuration</value>
   </data>
-  <data name="SessionDisposedTransactionActive" xml:space="preserve">
-    <value>Session was disposed with an active transaction.</value>
+  <data name="SessionOpened" xml:space="preserve">
+    <value>Session {0} opened.</value>
   </data>
 </root>

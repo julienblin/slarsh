@@ -10,7 +10,6 @@
 
 namespace Slarsh {
     using System;
-    using System.Reflection;
     
     
     /// <summary>
@@ -40,7 +39,7 @@ namespace Slarsh {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Slarsh.Resources", typeof(Resources).GetTypeInfo().Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Slarsh.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -89,6 +88,15 @@ namespace Slarsh {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Committing {0}....
+        /// </summary>
+        internal static string Committing {
+            get {
+                return ResourceManager.GetString("Committing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The context is not ready. It is either not started or disposed..
         /// </summary>
         internal static string ContextIsNotReady {
@@ -98,11 +106,11 @@ namespace Slarsh {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Creating context....
+        ///   Looks up a localized string similar to Disposing {0}....
         /// </summary>
-        internal static string CreatingContext {
+        internal static string Disposing {
             get {
-                return ResourceManager.GetString("CreatingContext", resourceCulture);
+                return ResourceManager.GetString("Disposing", resourceCulture);
             }
         }
         

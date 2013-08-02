@@ -2,13 +2,17 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
+    using System.Transactions;
+
+    using Common.Logging;
 
     using Slarsh.Utilities;
 
+    /// <summary>
+    /// Default implementation for <see cref="IContextFactory"/>.
+    /// </summary>
     public class ContextFactory : IContextFactory
     {
         /// <summary>
@@ -19,19 +23,33 @@
         /// <summary>
         /// The logger.
         /// </summary>
-        private ILogger logger;
+        private readonly ILog log = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The context provider factories.
         /// </summary>
-        private readonly List<IContextProviderFactory> contextProviderFactories; 
+        private readonly List<IContextProviderFactory> contextProviderFactories;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContextFactory"/> class.
         /// </summary>
-        public ContextFactory()
+        /// <param name="contextProviderFactory">
+        /// The main <see cref="IContextProviderFactory"/>.
+        /// </param>
+        public ContextFactory(IContextProviderFactory contextProviderFactory)
+            : this(new[] { contextProviderFactory })
         {
-            this.contextProviderFactories = new List<IContextProviderFactory>();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContextFactory"/> class.
+        /// </summary>
+        /// <param name="contextProviderFactories">
+        /// The list of <see cref="IContextProviderFactory"/>.
+        /// </param>
+        public ContextFactory(IEnumerable<IContextProviderFactory> contextProviderFactories)
+        {
+            this.contextProviderFactories = contextProviderFactories.ToList();
             this.IsReady = false;
         }
 
@@ -44,45 +62,25 @@
         }
 
         /// <summary>
-        /// Gets the logger.
+        /// Gets a value indicating whether the context factory is ready and can start new <see cref="IContext"/>.
         /// </summary>
-        public ILogger Logger
-        {
-            get
-            {
-                return this.logger ?? (this.logger = DefaultLogger.Instance);
-            }
-        }
-
         public bool IsReady { get; private set; }
 
+        /// <summary>
+        /// Gets the <see cref="IContextProviderFactory">Context provider factories</see>.
+        /// </summary>
         public IEnumerable<IContextProviderFactory> ContextProviderFactories
         {
             get
             {
-                return new ReadOnlyCollection<IContextProviderFactory>(this.contextProviderFactories);
+                return this.contextProviderFactories.AsReadOnly();
             }
         }
 
-        public void Add(params IContextProviderFactory[] contextProviderFactories)
-        {
-            lock (SyncRoot)
-            {
-                if (this.IsReady)
-                {
-                    throw new SlarshException(Resources.CannotAddContextProvidersIfStarted);
-                }
-
-                foreach (var contextProviderFactory in contextProviderFactories)
-                {
-                    if (!this.contextProviderFactories.Contains(contextProviderFactory))
-                    {
-                        this.contextProviderFactories.Add(contextProviderFactory);
-                    }
-                }
-            }
-        }
-
+        /// <summary>
+        /// The starts the <see cref="IContextFactory"/>.
+        /// Must be called prior to <see cref="IContextFactory.StartNewContext()"/>.
+        /// </summary>
         public void Start()
         {
             lock (SyncRoot)
@@ -92,7 +90,7 @@
                     throw new SlarshException(Resources.CannotStartContextFactoryIfStarted);
                 }
 
-                using (new StopwatchLoggerScope(this.Logger, Resources.Starting, Resources.StartedIn, this))
+                using (new StopwatchLogScope(this.log, Resources.Starting, Resources.StartedIn, this))
                 {
                     try
                     {
@@ -100,7 +98,7 @@
                     }
                     catch (AggregateException ex)
                     {
-                        this.Logger.FatalException(Resources.ErrorWhileStartingProviderFactories, ex);
+                        this.log.Fatal(Resources.ErrorWhileStartingProviderFactories, ex);
                         throw new SlarshException(Resources.ErrorWhileStartingProviderFactories, ex);
                     }
 
@@ -109,23 +107,58 @@
             }
         }
 
-        public IContext CreateContext()
+        /// <summary>
+        /// Creates and starts a new context with default options (TransactionScopeOption.Required, new TransactionOptions()).
+        /// </summary>
+        /// <returns>
+        /// The <see cref="IContext"/>.
+        /// </returns>
+        public IContext StartNewContext()
+        {
+            return this.StartNewContext(TransactionScopeOption.Required, new TransactionOptions());
+        }
+
+        /// <summary>
+        /// Creates and starts a new context.
+        /// </summary>
+        /// <param name="transactionScopeOption">
+        /// The transaction scope option.
+        /// </param>
+        /// <param name="transactionOptions">
+        /// The transaction options.
+        /// </param>
+        /// <returns>
+        /// The <see cref="IContext"/>.
+        /// </returns>
+        public IContext StartNewContext(TransactionScopeOption transactionScopeOption, TransactionOptions transactionOptions)
         {
             if (!this.IsReady)
             {
                 throw new SlarshException(Resources.CannotCreateContextIfFactoryNotStarted);
             }
 
-            this.Logger.Debug(Resources.CreatingContext);
-            return new Context(this, this.contextProviderFactories.Select(x => x.CreateContextProvider()));
+            var context = new Context(this);
+            this.log.Debug(Resources.Starting.Format(context));
+            context.Start(transactionScopeOption, transactionOptions);
+            return context;
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <filterpriority>2</filterpriority>
         public void Dispose()
         {
             this.Dispose(true);
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Dispose appropriate resources.
+        /// </summary>
+        /// <param name="disposing">
+        /// true if managed resources must be disposed, false otherwise.
+        /// </param>
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
@@ -140,7 +173,7 @@
                         }
                         catch (Exception ex)
                         {
-                            this.Logger.WarnException(Resources.ErrorWhileDisposing.Format(provider), ex);
+                            this.log.Warn(Resources.ErrorWhileDisposing.Format(provider), ex);
                         }
                     });
             }

@@ -1,7 +1,11 @@
 ﻿namespace Slarsh
 {
-    using System.Collections.Generic;
-
+    /// <summary>
+    /// A specialized <see cref="IQuery{T}"/> that returns a <see cref="IPaginationResult{T}"/>.
+    /// </summary>
+    /// <typeparam name="T">
+    /// The type of enumerated results.
+    /// </typeparam>
     public interface IEnumerableQuery<T> : IQuery<IPaginationResult<T>>
     {
     }

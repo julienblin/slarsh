@@ -5,15 +5,20 @@
     using System.ComponentModel.DataAnnotations;
     using System.Diagnostics;
 
+    using Common.Logging;
+
     using FluentNHibernate.Cfg;
     using FluentNHibernate.Cfg.Db;
 
-    using Slarsh.Utilities;
-
     using global::NHibernate.Tool.hbm2ddl;
+
+    using Slarsh.Utilities;
 
     using NH = global::NHibernate;
 
+    /// <summary>
+    /// The NHibernate <see cref="IContextProviderFactory"/>. Binds to a <see cref="NH.ISessionFactory"/>.
+    /// </summary>
     public class NHContextProviderFactory : IContextProviderFactory, IValidatableObject
     {
         /// <summary>
@@ -24,7 +29,7 @@
         /// <summary>
         /// The logger.
         /// </summary>
-        private ILogger logger;
+        private readonly ILog log = LogManager.GetCurrentClassLogger();
         
         /// <summary>
         /// Initializes a new instance of the <see cref="NHContextProviderFactory"/> class.
@@ -43,17 +48,6 @@
         ~NHContextProviderFactory()
         {
             this.Dispose(false);
-        }
-
-        /// <summary>
-        /// Gets the logger.
-        /// </summary>
-        public ILogger Logger
-        {
-            get
-            {
-                return this.logger ?? (this.logger = DefaultLogger.Instance);
-            }
         }
 
         /// <summary>
@@ -90,12 +84,18 @@
             return this.configuration.Validate();
         }
 
+        /// <summary>
+        /// Starts the context provider. Will be called before any action on it.
+        /// </summary>
+        /// <param name="contextFactory">
+        /// The context factory.
+        /// </param>
         public virtual void Start(IContextFactory contextFactory)
         {
             this.EnforceValidation();
             this.NHConfiguration = this.BuildNHConfiguration();
 
-            if (this.configuration.AutoUpdateSchema)
+            if (this.configuration.AutoUpdateSchemaOnStart)
             {
                 new SchemaUpdate(this.NHConfiguration).Execute(true, true);
             }
@@ -103,10 +103,19 @@
             this.SessionFactory = this.NHConfiguration.BuildSessionFactory();
         }
 
-        public virtual IContextProvider CreateContextProvider()
+        /// <summary>
+        /// Creates a <see cref="IContextProvider"/>.
+        /// </summary>
+        /// <param name="context">
+        /// The associated context.
+        /// </param>
+        /// <returns>
+        /// The <see cref="IContextProvider"/>.
+        /// </returns>
+        public virtual IContextProvider CreateContextProvider(IContext context)
         {
             Debug.Assert(this.SessionFactory != null, "this.SessionFactory != null");
-            return new NHContextProvider(this);
+            return new NHContextProvider(this, context);
         }
 
         /// <summary>
@@ -135,15 +144,21 @@
             }
         }
 
+        /// <summary>
+        /// Builds the NHibernate configuration object.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Configuration"/>.
+        /// </returns>
         protected virtual NH.Cfg.Configuration BuildNHConfiguration()
         {
-            using (new StopwatchLoggerScope(this.Logger, Resources.Building, Resources.BuiltIn, Resources.NHConfiguration))
+            using (new StopwatchLogScope(this.log, Resources.Building, Resources.BuiltIn, Resources.NHConfiguration))
             {
                 IPersistenceConfigurer fluentDbConfig;
 
                 switch (this.configuration.DatabaseType)
                 {
-                    case DatabaseType.SQLite:
+                    case DatabaseType.SqLite:
                         fluentDbConfig = string.IsNullOrEmpty(this.configuration.ConnectionString)
                                        ? SQLiteConfiguration.Standard.InMemory()
                                        : SQLiteConfiguration.Standard.ConnectionString(this.configuration.ConnectionString);
@@ -160,19 +175,19 @@
                         throw new ArgumentOutOfRangeException();
                 }
 
-                var resultConfig = Fluently.Configure()
-                                           .Database(fluentDbConfig)
-                                           .Mappings(this.configuration.MappingConfiguration)
-                                           .BuildConfiguration();
+                var fluentConfig = Fluently.Configure().Database(fluentDbConfig);
 
-                if (this.configuration.FormatSql)
+                foreach (var mappingAssembly in this.configuration.MappingAssemblies)
                 {
-                    resultConfig.SetProperty(NH.Cfg.Environment.FormatSql, "true");
+                    fluentConfig.Mappings(m => m.FluentMappings.AddFromAssembly(mappingAssembly));
                 }
 
-                if (this.configuration.ShowSql)
+                var resultConfig = fluentConfig.BuildConfiguration();
+                resultConfig.SetProperty("nhibernate-logger", typeof(NH.Logging.CommonLogging.CommonLoggingLoggerFactory).AssemblyQualifiedName);
+
+                foreach (var key in this.configuration.NHProperties.Keys)
                 {
-                    resultConfig.SetProperty(NH.Cfg.Environment.ShowSql, "true");
+                    resultConfig.SetProperty(key, this.configuration.NHProperties[key]);
                 }
 
                 return resultConfig;
