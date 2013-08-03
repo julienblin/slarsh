@@ -79,24 +79,6 @@ namespace Slarsh.NHibernate {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Can only create NHEntities. Actual type: {0}..
-        /// </summary>
-        internal static string CanOnlyCreateNHEntities {
-            get {
-                return ResourceManager.GetString("CanOnlyCreateNHEntities", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Error while creating query {0}. It&apos;s probably because it does not have a public constructor with a single ISession argument..
-        /// </summary>
-        internal static string ErrorWhileCreatingQuery {
-            get {
-                return ResourceManager.GetString("ErrorWhileCreatingQuery", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Internal error..
         /// </summary>
         internal static string InternalError {

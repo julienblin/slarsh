@@ -61,15 +61,6 @@ namespace Slarsh {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You cannot add context providers when the context factory has been started..
-        /// </summary>
-        internal static string CannotAddContextProvidersIfStarted {
-            get {
-                return ResourceManager.GetString("CannotAddContextProvidersIfStarted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cannot create context if the context factory is not started..
         /// </summary>
         internal static string CannotCreateContextIfFactoryNotStarted {
@@ -106,6 +97,15 @@ namespace Slarsh {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Discarding current IContextFactory..
+        /// </summary>
+        internal static string DiscardingCurrentContextFactory {
+            get {
+                return ResourceManager.GetString("DiscardingCurrentContextFactory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Disposing {0}....
         /// </summary>
         internal static string Disposing {
@@ -133,20 +133,20 @@ namespace Slarsh {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No IContextFactory has been defined. Please call Start() first..
+        /// </summary>
+        internal static string NoCurrentContextFactory {
+            get {
+                return ResourceManager.GetString("NoCurrentContextFactory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No ICurrentContextHolder has been defined..
         /// </summary>
         internal static string NoCurrentContextHolder {
             get {
                 return ResourceManager.GetString("NoCurrentContextHolder", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0} started..
-        /// </summary>
-        internal static string Started {
-            get {
-                return ResourceManager.GetString("Started", resourceCulture);
             }
         }
         
@@ -180,9 +180,18 @@ namespace Slarsh {
         /// <summary>
         ///   Looks up a localized string similar to Unable to find a suitable context provider for entity type {0}. Available context providers : {1}..
         /// </summary>
-        internal static string UnableToFindASuitableContextproviderFor {
+        internal static string UnableToFindASuitableContextProviderFor {
             get {
-                return ResourceManager.GetString("UnableToFindASuitableContextproviderFor", resourceCulture);
+                return ResourceManager.GetString("UnableToFindASuitableContextProviderFor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to set a new current context because there is already a current context that is ready. You must first commit / dispose the current context..
+        /// </summary>
+        internal static string UnableToSetCurrentContextBecauseThereIsAlreadyOne {
+            get {
+                return ResourceManager.GetString("UnableToSetCurrentContextBecauseThereIsAlreadyOne", resourceCulture);
             }
         }
     }

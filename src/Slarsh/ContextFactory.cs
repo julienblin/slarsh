@@ -1,25 +1,21 @@
 ﻿namespace Slarsh
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
     using System.Transactions;
 
     using Common.Logging;
 
-    using Slarsh.Utilities;
+    using Slarsh.Impl;
 
     /// <summary>
-    /// The Context Factory is the main entry point for <c>Slarsh</c>.
-    /// It must be unique per application container, usually configured and started at the beginning.
+    /// Entry point for a <c>Slarsh</c> application.
     /// </summary>
-    public class ContextFactory : IContextFactory
+    public static class ContextFactory
     {
         /// <summary>
-        /// The sync root for thread safety.
+        /// The log.
         /// </summary>
-        private static readonly object SyncRoot = new object();
+        private static readonly ILog Log = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// The current context holder.
@@ -27,49 +23,24 @@
         private static ICurrentContextHolder currentContextHolder;
 
         /// <summary>
-        /// The logger.
+        /// The current context factory.
         /// </summary>
-        private readonly ILog log = LogManager.GetCurrentClassLogger();
+        private static ContextFactoryImpl currentContextFactory;
 
         /// <summary>
-        /// The context provider factories.
+        /// Gets the current <see cref="IContextFactory"/>.
         /// </summary>
-        private readonly List<IContextProviderFactory> contextProviderFactories;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ContextFactory"/> class.
-        /// </summary>
-        /// <param name="configuration">
-        /// The configuration.
-        /// </param>
-        protected ContextFactory(ContextFactoryConfiguration configuration)
-        {
-            configuration.EnforceValidation();
-            this.contextProviderFactories = configuration.ContextProviderFactories.ToList();
-            this.IsReady = false;
-        }
-
-        /// <summary>
-        /// Finalizes an instance of the <see cref="ContextFactory"/> class. 
-        /// </summary>
-        ~ContextFactory()
-        {
-            this.Dispose(false);
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether the context factory is ready and can start new <see cref="IContext"/>.
-        /// </summary>
-        public bool IsReady { get; private set; }
-
-        /// <summary>
-        /// Gets the <see cref="IContextProviderFactory">Context provider factories</see>.
-        /// </summary>
-        public IEnumerable<IContextProviderFactory> ContextProviderFactories
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "OK here - global problem.")]
+        public static IContextFactory Current
         {
             get
             {
-                return this.contextProviderFactories.AsReadOnly();
+                if (currentContextFactory == null)
+                {
+                    throw new SlarshException(Resources.NoCurrentContextFactory);
+                }
+
+                return currentContextFactory;
             }
         }
 
@@ -89,10 +60,16 @@
                 throw new ArgumentNullException("configuration");
             }
 
+            if (currentContextFactory != null)
+            {
+                Log.Warn(Resources.DiscardingCurrentContextFactory);
+                currentContextFactory.Dispose();
+            }
+
             currentContextHolder = configuration.CurrentContextHolder;
-            var contextFactory = new ContextFactory(configuration);
-            contextFactory.Start();
-            return contextFactory;
+            currentContextFactory = new ContextFactoryImpl(configuration);
+            currentContextFactory.Start();
+            return currentContextFactory;
         }
 
         /// <summary>
@@ -101,9 +78,9 @@
         /// <returns>
         /// The <see cref="IContext"/>.
         /// </returns>
-        public IContext StartNewContext()
+        public static IContext StartNewContext()
         {
-            return this.StartNewContext(TransactionScopeOption.Required, new TransactionOptions());
+            return Current.StartNewContext();
         }
 
         /// <summary>
@@ -118,27 +95,9 @@
         /// <returns>
         /// The <see cref="IContext"/>.
         /// </returns>
-        public IContext StartNewContext(TransactionScopeOption transactionScopeOption, TransactionOptions transactionOptions)
+        public static IContext StartNewContext(TransactionScopeOption transactionScopeOption, TransactionOptions transactionOptions)
         {
-            if (!this.IsReady)
-            {
-                throw new SlarshException(Resources.CannotCreateContextIfFactoryNotStarted);
-            }
-
-            var context = new Context(this);
-            context.Start(transactionScopeOption, transactionOptions);
-            SetCurrentContext(context);
-            return context;
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        /// <filterpriority>2</filterpriority>
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
+            return Current.StartNewContext(transactionScopeOption, transactionOptions);
         }
 
         /// <summary>
@@ -170,63 +129,13 @@
                 throw new SlarshException(Resources.NoCurrentContextHolder);
             }
 
+            var currentContext = currentContextHolder.GetCurrentContext();
+            if ((currentContext != null) && currentContext.IsReady)
+            {
+                throw new SlarshException(Resources.UnableToSetCurrentContextBecauseThereIsAlreadyOne);
+            }
+
             currentContextHolder.SetCurrentContext(context);
-        }
-
-        /// <summary>
-        /// The starts the <see cref="IContextFactory"/>.
-        /// Must be called prior to <see cref="IContextFactory.StartNewContext()"/>.
-        /// </summary>
-        protected void Start()
-        {
-            lock (SyncRoot)
-            {
-                if (this.IsReady)
-                {
-                    throw new SlarshException(Resources.CannotStartContextFactoryIfStarted);
-                }
-
-                using (new StopwatchLogScope(this.log, Resources.Starting, Resources.StartedIn, this))
-                {
-                    try
-                    {
-                        Parallel.ForEach(this.contextProviderFactories, factory => factory.Start(this));
-                    }
-                    catch (AggregateException ex)
-                    {
-                        this.log.Fatal(Resources.ErrorWhileStartingProviderFactories, ex);
-                        throw new SlarshException(Resources.ErrorWhileStartingProviderFactories, ex);
-                    }
-
-                    this.IsReady = true;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Dispose appropriate resources.
-        /// </summary>
-        /// <param name="disposing">
-        /// true if managed resources must be disposed, false otherwise.
-        /// </param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                Parallel.ForEach(
-                    this.ContextProviderFactories,
-                    provider =>
-                    {
-                        try
-                        {
-                            provider.Dispose();
-                        }
-                        catch (Exception ex)
-                        {
-                            this.log.Warn(Resources.ErrorWhileDisposing.Format(provider), ex);
-                        }
-                    });
-            }
         }
     }
 }

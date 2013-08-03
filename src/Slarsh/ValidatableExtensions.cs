@@ -21,7 +21,7 @@
         /// </returns>
         public static bool IsValid(this IValidatable validatable)
         {
-            return validatable.Validate().Any();
+            return !validatable.Validate().Any();
         }
 
         /// <summary>

@@ -1,12 +1,13 @@
 ﻿namespace Slarsh.NHibernate.Tests
 {
+    using FluentAssertions;
+
     using NUnit.Framework;
 
     [TestFixture]
     public class NHContextProviderFactoryTest
     {
         [Test]
-        [ExpectedException(typeof(SlarshException))]
         public void It_should_validate_connection_string()
         {
             var nhContextProviderFactory = new NHContextProviderFactory(
@@ -15,7 +16,7 @@
                         DatabaseType = DatabaseType.SqLite
                     });
 
-            ContextFactory.Start(new ContextFactoryConfiguration(nhContextProviderFactory));
+            nhContextProviderFactory.IsValid().Should().BeFalse();
         }
     }
 }

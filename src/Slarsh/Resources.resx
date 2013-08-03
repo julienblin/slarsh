@@ -117,9 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="CannotAddContextProvidersIfStarted" xml:space="preserve">
-    <value>You cannot add context providers when the context factory has been started.</value>
-  </data>
   <data name="CannotCreateContextIfFactoryNotStarted" xml:space="preserve">
     <value>Cannot create context if the context factory is not started.</value>
   </data>
@@ -132,6 +129,9 @@
   <data name="ContextIsNotReady" xml:space="preserve">
     <value>The context is not ready. It is either not started or disposed.</value>
   </data>
+  <data name="DiscardingCurrentContextFactory" xml:space="preserve">
+    <value>Discarding current IContextFactory.</value>
+  </data>
   <data name="Disposing" xml:space="preserve">
     <value>Disposing {0}...</value>
   </data>
@@ -141,11 +141,11 @@
   <data name="ErrorWhileStartingProviderFactories" xml:space="preserve">
     <value>Error while Starting provider factories.</value>
   </data>
+  <data name="NoCurrentContextFactory" xml:space="preserve">
+    <value>No IContextFactory has been defined. Please call Start() first.</value>
+  </data>
   <data name="NoCurrentContextHolder" xml:space="preserve">
     <value>No ICurrentContextHolder has been defined.</value>
-  </data>
-  <data name="Started" xml:space="preserve">
-    <value>{0} started.</value>
   </data>
   <data name="StartedIn" xml:space="preserve">
     <value>{0} started in {1} ms.</value>
@@ -156,7 +156,10 @@
   <data name="TransactionOptionsCannotBeModified" xml:space="preserve">
     <value>Transaction options cannot be modified when there is a dependant transaction.</value>
   </data>
-  <data name="UnableToFindASuitableContextproviderFor" xml:space="preserve">
+  <data name="UnableToFindASuitableContextProviderFor" xml:space="preserve">
     <value>Unable to find a suitable context provider for entity type {0}. Available context providers : {1}.</value>
+  </data>
+  <data name="UnableToSetCurrentContextBecauseThereIsAlreadyOne" xml:space="preserve">
+    <value>Unable to set a new current context because there is already a current context that is ready. You must first commit / dispose the current context.</value>
   </data>
 </root>

@@ -43,6 +43,14 @@
             {
                 File.Delete(TestDbFile);
             }
+
+            ContextFactory.Start(new ContextFactoryConfiguration(CreateNHContextProviderFactory()));
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            ContextFactory.Current.Dispose();
         }
     }
 }

@@ -2,7 +2,6 @@
 {
     using System;
     using System.Diagnostics;
-    using System.Transactions;
 
     using Common.Logging;
 
@@ -120,33 +119,6 @@
         {
             Debug.Assert(this.session != null, "this.session != null");
             return this.session.Get<T>(id);
-        }
-
-        /// <summary>
-        /// Creates a query.
-        /// </summary>
-        /// <typeparam name="T">
-        /// The type of query to create.
-        /// </typeparam>
-        /// <returns>
-        /// The query.
-        /// </returns>
-        public T CreateQuery<T>()
-        {
-            if (!typeof(INHQuery).IsAssignableFrom(typeof(T)))
-            {
-                throw new SlarshException(Resources.InternalError);
-            }
-
-            try
-            {
-                return (T)Activator.CreateInstance(typeof(T), this.NHSession);
-            }
-            catch (Exception ex)
-            {
-                this.log.Error(Resources.ErrorWhileCreatingQuery.Format(typeof(T)), ex);
-                throw new SlarshException(Resources.ErrorWhileCreatingQuery.Format(typeof(T)), ex);
-            }
         }
 
         /// <summary>
