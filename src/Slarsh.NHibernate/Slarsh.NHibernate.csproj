@@ -65,6 +65,7 @@
     </Compile>
     <Compile Include="DatabaseType.cs" />
     <Compile Include="INHQuery.cs" />
+    <Compile Include="IPreparedQuery.cs" />
     <Compile Include="NHContextProvider.cs" />
     <Compile Include="NHContextProviderFactory.cs" />
     <Compile Include="NHContextProviderFactoryConfiguration.cs" />
@@ -77,6 +78,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="PreparedQuery.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -8,14 +8,9 @@
 
     public class SimpleEntityQuery : NHQuery<SimpleEntity>
     {
-        public SimpleEntityQuery(ISession session)
-            : base(session)
-        {
-        }
-
         public string NameLike { get; set; }
 
-        protected override IQueryOver<SimpleEntity, SimpleEntity> CreateQueryOver(ISession session)
+        protected override IQueryOver<SimpleEntity, SimpleEntity> BuildQueryOver(IContextProvider contextProvider, ISession session)
         {
             var query = session.QueryOver<SimpleEntity>();
 

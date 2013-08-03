@@ -39,15 +39,18 @@
         T Get<T>(object id);
 
         /// <summary>
-        /// Creates a query.
+        /// Fulfill a <see cref="IQuery{T}"/>.
         /// </summary>
+        /// <param name="query">
+        /// The query.
+        /// </param>
         /// <typeparam name="T">
-        /// The type of query to create.
+        /// The type or returned result query.
         /// </typeparam>
         /// <returns>
-        /// The query.
+        /// The result.
         /// </returns>
-        T CreateQuery<T>();
+        T Fulfill<T>(IQuery<T> query);
 
         /// <summary>
         /// Indicates whether this context provider takes care of the <paramref name="type"/>.

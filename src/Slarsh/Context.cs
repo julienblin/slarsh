@@ -148,22 +148,25 @@
         }
 
         /// <summary>
-        /// Creates a query.
+        /// Fulfill a <see cref="IQuery{T}"/>.
         /// </summary>
+        /// <param name="query">
+        /// The query.
+        /// </param>
         /// <typeparam name="T">
-        /// The type of query to create.
+        /// The type or returned result query.
         /// </typeparam>
         /// <returns>
-        /// The query.
+        /// The result.
         /// </returns>
-        public T CreateQuery<T>()
+        public T Fulfill<T>(IQuery<T> query)
         {
             if (!this.IsReady)
             {
                 throw new SlarshException(Resources.ContextIsNotReady);
             }
 
-            return this.GetContextProviderFor(typeof(T)).CreateQuery<T>();
+            return this.GetContextProviderFor(query.GetType()).Fulfill(query);
         }
 
         /// <summary>

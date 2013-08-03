@@ -149,6 +149,28 @@
         }
 
         /// <summary>
+        /// Fulfill a <see cref="IQuery{T}"/>.
+        /// </summary>
+        /// <param name="query">
+        /// The query.
+        /// </param>
+        /// <typeparam name="T">
+        /// The type or returned result query.
+        /// </typeparam>
+        /// <returns>
+        /// The result.
+        /// </returns>
+        public T Fulfill<T>(IQuery<T> query)
+        {
+            if (!(query is INHQuery))
+            {
+                throw new SlarshException(Resources.InternalError);
+            }
+
+            return (T)((INHQuery)query).Fulfill(this, this.NHSession);
+        }
+
+        /// <summary>
         /// Indicates whether this context provider takes care of the <paramref name="type"/>.
         /// Accepted types: <see cref="NHEntity"/>.
         /// </summary>

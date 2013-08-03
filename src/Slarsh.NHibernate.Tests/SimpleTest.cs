@@ -38,11 +38,9 @@
                 var simpleEntity = new SimpleEntity { Name = "Foo" };
                 context.Add(simpleEntity);
 
-                var query = context.CreateQuery<SimpleEntityQuery>();
-                query.NameLike = "F";
-                query.OrderBy(x => x.Name);
+                var query = new SimpleEntityQuery { NameLike = "F" };
+                var queryResult = context.Fulfill(query).Paginate();
 
-                var queryResult = query.Paginate();
                 queryResult.TotalItems.Should().Be(1);
                 queryResult.CurrentPage.Should().Be(1);
                 queryResult.PageSize.Should().BeGreaterThan(0);
