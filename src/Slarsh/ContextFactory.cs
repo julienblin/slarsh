@@ -126,7 +126,6 @@
             }
 
             var context = new Context(this);
-            this.log.Debug(Resources.Starting.Format(context));
             context.Start(transactionScopeOption, transactionOptions);
             SetCurrentContext(context);
             return context;

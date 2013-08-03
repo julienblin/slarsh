@@ -169,6 +169,15 @@ namespace Slarsh {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Transaction options cannot be modified when there is a dependant transaction..
+        /// </summary>
+        internal static string TransactionOptionsCannotBeModified {
+            get {
+                return ResourceManager.GetString("TransactionOptionsCannotBeModified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to find a suitable context provider for entity type {0}. Available context providers : {1}..
         /// </summary>
         internal static string UnableToFindASuitableContextproviderFor {

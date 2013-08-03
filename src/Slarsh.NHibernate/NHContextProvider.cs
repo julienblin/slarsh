@@ -2,6 +2,7 @@
 {
     using System;
     using System.Diagnostics;
+    using System.Transactions;
 
     using Common.Logging;
 
@@ -23,14 +24,14 @@
         private readonly IContext context;
 
         /// <summary>
-        /// The session.
-        /// </summary>
-        private readonly NH.ISession session;
-
-        /// <summary>
         /// The logger.
         /// </summary>
         private readonly ILog log = LogManager.GetCurrentClassLogger();
+
+        /// <summary>
+        /// The session.
+        /// </summary>
+        private NH.ISession session;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NHContextProvider"/> class.
@@ -45,8 +46,8 @@
         {
             this.nhContextProviderFactory = nhContextProviderFactory;
             this.context = context;
-            this.session = this.nhContextProviderFactory.SessionFactory.OpenSession();
-            this.log.Debug(Resources.SessionOpened.Format(this.session));
+            this.context.TransactionStarted += this.OnContextOnTransactionStarted;
+            this.context.TransactionCommitting += this.ContextOnTransactionCommitting;
         }
 
         /// <summary>
@@ -208,6 +209,40 @@
                 {
                     this.session.Dispose();
                 }
+            }
+        }
+
+        /// <summary>
+        /// Starts the session after the transaction has started.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The arguments.
+        /// </param>
+        protected virtual void OnContextOnTransactionStarted(object sender, EventArgs e)
+        {
+            this.session = this.nhContextProviderFactory.SessionFactory.OpenSession();
+            this.log.Debug(Resources.SessionOpened.Format(this.session));
+        }
+
+        /// <summary>
+        /// Flush the session before the transaction commits.
+        /// Not optimal, but the result is a behavior to the database
+        /// closer to what is expected.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The arguments.
+        /// </param>
+        protected virtual void ContextOnTransactionCommitting(object sender, EventArgs e)
+        {
+            if (this.session != null)
+            {
+                this.session.Flush();
             }
         }
     }

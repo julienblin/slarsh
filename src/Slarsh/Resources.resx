@@ -153,6 +153,9 @@
   <data name="Starting" xml:space="preserve">
     <value>Starting {0}...</value>
   </data>
+  <data name="TransactionOptionsCannotBeModified" xml:space="preserve">
+    <value>Transaction options cannot be modified when there is a dependant transaction.</value>
+  </data>
   <data name="UnableToFindASuitableContextproviderFor" xml:space="preserve">
     <value>Unable to find a suitable context provider for entity type {0}. Available context providers : {1}.</value>
   </data>

@@ -13,7 +13,7 @@
         /// </summary>
         public ContextFactoryConfiguration()
         {
-            this.CurrentContextHolder = new SingleThreadCurrentContextHolder();
+            this.CurrentContextHolder = new ThreadStaticCurrentContextHolder();
         }
 
         /// <summary>
@@ -25,7 +25,7 @@
         public ContextFactoryConfiguration(IContextProviderFactory contextProviderFactory)
         {
             this.ContextProviderFactories = new[] { contextProviderFactory };
-            this.CurrentContextHolder = new SingleThreadCurrentContextHolder();
+            this.CurrentContextHolder = new ThreadStaticCurrentContextHolder();
         }
 
         /// <summary>
@@ -35,7 +35,7 @@
         public IEnumerable<IContextProviderFactory> ContextProviderFactories { get; set; }
 
         /// <summary>
-        /// Gets or sets the current context holder. Default value: <see cref="SingleThreadCurrentContextHolder"/>.
+        /// Gets or sets the current context holder. Default value: <see cref="ThreadStaticCurrentContextHolder"/>.
         /// </summary>
         public ICurrentContextHolder CurrentContextHolder { get; set; }
     }

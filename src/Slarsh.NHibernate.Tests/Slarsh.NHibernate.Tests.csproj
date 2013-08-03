@@ -71,6 +71,8 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AsyncTest.cs" />
+    <Compile Include="Commands\CreateSimpleEntityCommand.cs" />
     <Compile Include="Entities\SimpleEntity.cs" />
     <Compile Include="SetupFixture.cs" />
     <Compile Include="Mappings\SimpleEntityMap.cs" />

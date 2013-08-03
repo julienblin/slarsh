@@ -1,15 +1,17 @@
 ﻿namespace Slarsh
 {
+    using System;
+
     /// <summary>
-    /// <see cref="ICurrentContextHolder"/> implementation for single-thread applications.
-    /// Can only hold one context at a time.
+    /// <see cref="ICurrentContextHolder"/> implementation that stores <see cref="IContext"/> relative to current thread.
     /// </summary>
-    public class SingleThreadCurrentContextHolder : ICurrentContextHolder
+    public class ThreadStaticCurrentContextHolder : ICurrentContextHolder
     {
         /// <summary>
         /// The current context.
         /// </summary>
-        private IContext currentContext;
+        [ThreadStatic]
+        private static IContext threadCurrentContext;
 
         /// <summary>
         /// Gets the current context.
@@ -19,7 +21,7 @@
         /// </returns>
         public IContext GetCurrentContext()
         {
-            return this.currentContext;
+            return threadCurrentContext;
         }
 
         /// <summary>
@@ -30,7 +32,7 @@
         /// </param>
         public void SetCurrentContext(IContext context)
         {
-            this.currentContext = context;
+            threadCurrentContext = context;
         }
     }
 }
