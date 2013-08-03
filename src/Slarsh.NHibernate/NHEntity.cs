@@ -1,23 +1,28 @@
 ﻿namespace Slarsh.NHibernate
 {
-    using System;
+    public abstract class NHEntity : IEntity
+    {
+    }
 
     /// <summary>
     /// Base class for NHibernate-managed entities.
     /// </summary>
-    public abstract class NHEntity : IEntity
+    /// <typeparam name="TId">
+    /// The type of ids.
+    /// </typeparam>
+    public abstract class NHEntity<TId> : NHEntity
     {
 #pragma warning disable 649
         /// <summary>
         /// The id.
         /// </summary>
-        private Guid id;
+        private TId id;
 #pragma warning restore 649
 
         /// <summary>
         /// Gets the id.
         /// </summary>
-        public virtual Guid Id
+        public virtual TId Id
         {
             get { return this.id; }
         }

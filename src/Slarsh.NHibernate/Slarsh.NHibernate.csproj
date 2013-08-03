@@ -67,6 +67,7 @@
     <Compile Include="NHEntity.cs" />
     <Compile Include="NHEntityMap.cs" />
     <Compile Include="NHQuery.cs" />
+    <Compile Include="NHSiameseQuery.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>

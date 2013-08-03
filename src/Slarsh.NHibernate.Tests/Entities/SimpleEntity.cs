@@ -1,6 +1,8 @@
 ﻿namespace Slarsh.NHibernate.Tests.Entities
 {
-    public class SimpleEntity : NHEntity
+    using System;
+
+    public class SimpleEntity : NHEntity<Guid>
     {
         public virtual string Name { get; set; }
     }

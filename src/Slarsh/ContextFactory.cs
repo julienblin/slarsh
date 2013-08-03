@@ -28,6 +28,17 @@
         private static ContextFactoryImpl currentContextFactory;
 
         /// <summary>
+        /// Gets a value indicating whether there is a current <see cref="IContextFactory"/>.
+        /// </summary>
+        public static bool HasCurrent
+        {
+            get
+            {
+                return currentContextFactory != null;
+            }
+        }
+
+        /// <summary>
         /// Gets the current <see cref="IContextFactory"/>.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "OK here - global problem.")]
@@ -98,6 +109,17 @@
         public static IContext StartNewContext(TransactionScopeOption transactionScopeOption, TransactionOptions transactionOptions)
         {
             return Current.StartNewContext(transactionScopeOption, transactionOptions);
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether there is a current context.
+        /// </summary>
+        /// <returns>
+        /// True if there is a current context, false otherwise.
+        /// </returns>
+        internal static bool HasCurrentContext()
+        {
+            return currentContextHolder.GetCurrentContext() != null;
         }
 
         /// <summary>

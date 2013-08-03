@@ -1,0 +1,15 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Home";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Home</h2>
+
+<ul>
+    @foreach (var result in Model.Result)
+    {
+        <li>@result.FirstName @result.LastName</li>
+    }
+</ul>

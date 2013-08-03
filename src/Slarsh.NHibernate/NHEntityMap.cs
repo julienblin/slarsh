@@ -8,11 +8,14 @@
     /// <typeparam name="T">
     /// The <see cref="NHEntity"/> type.
     /// </typeparam>
-    public abstract class NHEntityMap<T> : ClassMap<T>
-        where T : NHEntity
+    /// <typeparam name="TId">
+    /// The type of the Id.
+    /// </typeparam>
+    public abstract class NHEntityMap<T, TId> : ClassMap<T>
+        where T : NHEntity<TId>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="NHEntityMap{T}"/> class.
+        /// Initializes a new instance of the <see cref="NHEntityMap{T,TId}"/> class.
         /// </summary>
         protected NHEntityMap()
         {
