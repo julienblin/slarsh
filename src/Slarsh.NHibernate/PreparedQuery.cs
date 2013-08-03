@@ -59,7 +59,7 @@
         /// <returns>
         /// The <see cref="PreparedQuery{T}"/>.
         /// </returns>
-        public PreparedQuery<T> Fetch(Expression<Func<T, object>> path)
+        public virtual PreparedQuery<T> Fetch(Expression<Func<T, object>> path)
         {
             this.fetchList.Add(path);
             return this;
@@ -77,7 +77,7 @@
         /// <returns>
         /// The <see cref="PreparedQuery{T}"/>.
         /// </returns>
-        public PreparedQuery<T> OrderBy(Expression<Func<T, object>> path, OrderType orderType = OrderType.Asc)
+        public virtual PreparedQuery<T> OrderBy(Expression<Func<T, object>> path, OrderType orderType = OrderType.Asc)
         {
             this.orderByList.Add(new OrderByPath { Path = path, OrderType = orderType });
             return this;
@@ -95,7 +95,7 @@
         /// <returns>
         /// The <see cref="PreparedQuery{T}"/>.
         /// </returns>
-        public PreparedQuery<T> OrderBy(string path, OrderType orderType = OrderType.Asc)
+        public virtual PreparedQuery<T> OrderBy(string path, OrderType orderType = OrderType.Asc)
         {
             this.orderByList.Add(new OrderByPath { PropertyName = path, OrderType = orderType });
             return this;
@@ -110,7 +110,7 @@
         /// <returns>
         /// The <see cref="IPaginationResult"/>.
         /// </returns>
-        public IPaginationResult<T> Paginate(IPaginationParams paginationParams = null)
+        public virtual IPaginationResult<T> Paginate(IPaginationParams paginationParams = null)
         {
             if (paginationParams == null)
             {
@@ -128,6 +128,41 @@
                 TotalItems = rowCount.Value,
                 Result = items
             };
+        }
+
+        /// <summary>
+        /// Runs the query and returns all the results.
+        /// WARNING: you might want to use <see cref="Paginate"/> instead, unless you are sure
+        /// that the result set is small.
+        /// </summary>
+        /// <returns>
+        /// The complete results.
+        /// </returns>
+        public virtual IEnumerable<T> List()
+        {
+            return this.BuildFinalQueryOver().List<T>();
+        }
+
+        /// <summary>
+        /// Runs the query and returns the number of rows.
+        /// </summary>
+        /// <returns>
+        /// The number of rows.
+        /// </returns>
+        public virtual int Count()
+        {
+            return this.BuildFinalQueryOver().RowCount();
+        }
+
+        /// <summary>
+        /// Returns a single instance that matches the query, or null if the query returns no results.
+        /// </summary>
+        /// <returns>
+        /// A single instance that matches the query, or null if the query returns no results.
+        /// </returns>
+        public virtual T SingleOrDefault()
+        {
+            return this.BuildFinalQueryOver().SingleOrDefault<T>();
         }
 
         /// <summary>

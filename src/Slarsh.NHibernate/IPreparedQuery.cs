@@ -1,6 +1,7 @@
 ﻿namespace Slarsh.NHibernate
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq.Expressions;
 
     /// <summary>
@@ -60,5 +61,31 @@
         /// The <see cref="IPaginationResult"/>.
         /// </returns>
         IPaginationResult<T> Paginate(IPaginationParams paginationParams = null);
+
+        /// <summary>
+        /// Runs the query and returns all the results.
+        /// WARNING: you might want to use <see cref="Paginate"/> instead, unless you are sure
+        /// that the result set is small.
+        /// </summary>
+        /// <returns>
+        /// The complete results.
+        /// </returns>
+        IEnumerable<T> List();
+
+        /// <summary>
+        /// Runs the query and returns the number of rows.
+        /// </summary>
+        /// <returns>
+        /// The number of rows.
+        /// </returns>
+        int Count();
+
+        /// <summary>
+        /// Returns a single instance that matches the query, or null if the query returns no results.
+        /// </summary>
+        /// <returns>
+        /// A single instance that matches the query, or null if the query returns no results.
+        /// </returns>
+        T SingleOrDefault();
     }
 }
