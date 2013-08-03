@@ -79,6 +79,28 @@
         T Fulfill<T>(IQuery<T> query);
 
         /// <summary>
+        /// Executes a command with no return type.
+        /// </summary>
+        /// <param name="command">
+        /// The command.
+        /// </param>
+        void Execute(ICommand command);
+
+        /// <summary>
+        /// Executes a command and return the result.
+        /// </summary>
+        /// <param name="command">
+        /// The command.
+        /// </param>
+        /// <typeparam name="T">
+        /// The type of result
+        /// </typeparam>
+        /// <returns>
+        /// The result.
+        /// </returns>
+        T Execute<T>(ICommand<T> command);
+
+        /// <summary>
         /// Starts the context.
         /// </summary>
         /// <param name="transactionScopeOption">

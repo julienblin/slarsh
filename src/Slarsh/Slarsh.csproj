@@ -54,6 +54,7 @@
     <Compile Include="Context.cs" />
     <Compile Include="ContextFactory.cs" />
     <Compile Include="ContextFactoryConfiguration.cs" />
+    <Compile Include="ICommand.cs" />
     <Compile Include="IContext.cs" />
     <Compile Include="IContextFactory.cs" />
     <Compile Include="IContextProvider.cs" />

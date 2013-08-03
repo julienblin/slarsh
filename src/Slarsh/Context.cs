@@ -170,6 +170,34 @@
         }
 
         /// <summary>
+        /// Executes a command with no return type.
+        /// </summary>
+        /// <param name="command">
+        /// The command.
+        /// </param>
+        public void Execute(ICommand command)
+        {
+            command.Execute(this);
+        }
+
+        /// <summary>
+        /// Executes a command and return the result.
+        /// </summary>
+        /// <param name="command">
+        /// The command.
+        /// </param>
+        /// <typeparam name="T">
+        /// The type of result
+        /// </typeparam>
+        /// <returns>
+        /// The result.
+        /// </returns>
+        public T Execute<T>(ICommand<T> command)
+        {
+            return command.Execute(this);
+        }
+
+        /// <summary>
         /// Starts the context.
         /// </summary>
         /// <param name="transactionScopeOption">
