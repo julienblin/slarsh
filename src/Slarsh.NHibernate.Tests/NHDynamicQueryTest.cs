@@ -111,5 +111,71 @@
                 context.Fulfill((NHDynamicQuery<Employee>)query).Count().Should().Be(1);
             }
         }
+
+        [Test]
+        public void It_should_handle_assignations_and_convenience_setters()
+        {
+            using (var context = ContextFactory.StartNewContext())
+            {
+                var now = DateTime.Now;
+
+                var boss = new Employee { Name = "The Boss.", Age = 45 };
+                context.Add(boss);
+
+                var subordinate = new Employee { Name = "subordinate", Boss = boss };
+                context.Add(subordinate);
+
+                var vacancy = new Vacancy { Employee = boss, StartDate = now, EndDate = now.AddDays(5) };
+                context.Add(vacancy);
+
+                context.Add(new Employee { Name = "Foo", Age = 25 });
+                context.Add(new Employee { Name = "Bar", Age = 30 });
+                
+                dynamic query = new NHDynamicQuery<Employee>();
+                query.Age = 25;
+
+                context.Fulfill((NHDynamicQuery<Employee>)query).Count().Should().Be(1);
+
+                query = new NHDynamicQuery<Employee>();
+                query.AgeGt = 27;
+
+                context.Fulfill((NHDynamicQuery<Employee>)query).Count().Should().Be(2);
+
+                query = new NHDynamicQuery<Employee>();
+                query.NameLike = "Bar";
+
+                context.Fulfill((NHDynamicQuery<Employee>)query).Count().Should().Be(1);
+
+                query = new NHDynamicQuery<Employee>();
+                query.AgeBetween = new object[] { 20, 28 };
+
+                context.Fulfill((NHDynamicQuery<Employee>)query).Count().Should().Be(1);
+
+                query = new NHDynamicQuery<Employee>();
+                query.AgeIn = new[] { 20, 28, 30 };
+
+                context.Fulfill((NHDynamicQuery<Employee>)query).Count().Should().Be(1);
+
+                query = new NHDynamicQuery<Employee>();
+                query.Boss.Name = boss.Name;
+
+                context.Fulfill((NHDynamicQuery<Employee>)query).Count().Should().Be(1);
+
+                query = new NHDynamicQuery<Employee>();
+                query.Boss.AgeGt = 40;
+
+                context.Fulfill((NHDynamicQuery<Employee>)query).Count().Should().Be(1);
+
+                query = new NHDynamicQuery<Employee>();
+                query.Boss.Vacancies.StartDateGt = now.AddDays(-1);
+
+                context.Fulfill((NHDynamicQuery<Employee>)query).Count().Should().Be(1);
+
+                query = new NHDynamicQuery<Employee>();
+                query.Boss.Vacancies.EndDateGt = now.AddDays(10);
+
+                context.Fulfill((NHDynamicQuery<Employee>)query).Count().Should().Be(0);
+            }
+        }
     }
 }

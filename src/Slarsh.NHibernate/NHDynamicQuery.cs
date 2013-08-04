@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Dynamic;
+    using System.Linq;
     using System.Reflection;
 
     using NH = global::NHibernate;
@@ -58,6 +59,58 @@
             }
 
             result = this.propertyAssignations[property];
+            return true;
+        }
+
+        /// <summary>
+        /// Provides the implementation for operations that set member values. Classes derived from the <see cref="T:System.Dynamic.DynamicObject"/> class can override this method to specify dynamic behavior for operations such as setting a value for a property.
+        /// </summary>
+        /// <returns>
+        /// true if the operation is successful; otherwise, false. If this method returns false, the run-time binder of the language determines the behavior. (In most cases, a language-specific run-time exception is thrown.)
+        /// </returns>
+        /// <param name="binder">Provides information about the object that called the dynamic operation. The binder.Name property provides the name of the member to which the value is being assigned. For example, for the statement sampleObject.SampleProperty = "Test", where sampleObject is an instance of the class derived from the <see cref="T:System.Dynamic.DynamicObject"/> class, binder.Name returns "SampleProperty". The binder.IgnoreCase property specifies whether the member name is case-sensitive.</param><param name="value">The value to set to the member. For example, for sampleObject.SampleProperty = "Test", where sampleObject is an instance of the class derived from the <see cref="T:System.Dynamic.DynamicObject"/> class, the <paramref name="value"/> is "Test".</param>
+        public override bool TrySetMember(SetMemberBinder binder, object value)
+        {
+            // Convenience method for DynamicProperty.Eq().
+            var property = typeof(T).GetProperty(binder.Name);
+            if (property != null)
+            {
+                if (!this.propertyAssignations.ContainsKey(property))
+                {
+                    this.propertyAssignations[property] = new NHDynamicQueryProperty(property);
+                }
+
+                this.propertyAssignations[property].Eq(value);
+                return true;
+            }
+
+            // Trying convenience setters.
+            var convenienceSetterMatch = NHDynamicQueryProperty.MatchConvenienceSetters.Match(binder.Name);
+            if (!convenienceSetterMatch.Success)
+            {
+                throw new SlarshException(string.Format(Resources.UnableToFindPropertyOnType, binder.Name, typeof(T)));
+            }
+
+            var propertyName = convenienceSetterMatch.Groups["propertyName"].Value;
+            var method = convenienceSetterMatch.Groups["method"].Value;
+            property = typeof(T).GetProperty(propertyName);
+            if (property == null)
+            {
+                throw new SlarshException(string.Format(Resources.UnableToFindPropertyOnType, propertyName, typeof(T)));
+            }
+
+            if (!this.propertyAssignations.ContainsKey(property))
+            {
+                this.propertyAssignations[property] = new NHDynamicQueryProperty(property);
+            }
+
+            var convenienceMethod = typeof(NHDynamicQueryProperty).GetMethods().FirstOrDefault(x => (x.Name == method) && (x.GetParameters().Length == 1) && !x.ContainsGenericParameters);
+            if (convenienceMethod == null)
+            {
+                throw new SlarshException(string.Format(Resources.UnableToFindConvenienceMethod, method, value.GetType()));
+            }
+
+            convenienceMethod.Invoke(this.propertyAssignations[property], new[] { value });
             return true;
         }
 

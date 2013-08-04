@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="BetweenValuesShouldHaveLength2" xml:space="preserve">
+    <value>Between values should have a length of 2.</value>
+  </data>
   <data name="Building" xml:space="preserve">
     <value>Building {0}...</value>
   </data>
@@ -131,6 +134,9 @@
   </data>
   <data name="SessionOpened" xml:space="preserve">
     <value>Session {0} opened.</value>
+  </data>
+  <data name="UnableToFindConvenienceMethod" xml:space="preserve">
+    <value>Unable to find a convenience method named {0} with target type {1}.</value>
   </data>
   <data name="UnableToFindPropertyOnType" xml:space="preserve">
     <value>Unable to find a property named {0} on type {1}.</value>

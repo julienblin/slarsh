@@ -61,6 +61,15 @@ namespace Slarsh.NHibernate {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Between values should have a length of 2..
+        /// </summary>
+        internal static string BetweenValuesShouldHaveLength2 {
+            get {
+                return ResourceManager.GetString("BetweenValuesShouldHaveLength2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Building {0}....
         /// </summary>
         internal static string Building {
@@ -102,6 +111,15 @@ namespace Slarsh.NHibernate {
         internal static string SessionOpened {
             get {
                 return ResourceManager.GetString("SessionOpened", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to find a convenience method named {0} with target type {1}..
+        /// </summary>
+        internal static string UnableToFindConvenienceMethod {
+            get {
+                return ResourceManager.GetString("UnableToFindConvenienceMethod", resourceCulture);
             }
         }
         
