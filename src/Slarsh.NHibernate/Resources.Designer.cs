@@ -106,6 +106,15 @@ namespace Slarsh.NHibernate {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to find a property named {0} on type {1}..
+        /// </summary>
+        internal static string UnableToFindPropertyOnType {
+            get {
+                return ResourceManager.GetString("UnableToFindPropertyOnType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to interpret siamese request for {0} = {1}..
         /// </summary>
         internal static string UnableToInterpreteSiameseSetMember {

@@ -15,10 +15,10 @@
         {
             using (var context = ContextFactory.StartNewContext())
             {
-                var simpleEntity = new SimpleEntity { Name = "Foo" };
+                var simpleEntity = new Employee { Name = "Foo" };
                 context.Add(simpleEntity);
 
-                var entity = context.Get<SimpleEntity>(simpleEntity.Id);
+                var entity = context.Get<Employee>(simpleEntity.Id);
 
                 entity.Should().Be(simpleEntity);
             }
@@ -29,7 +29,7 @@
         {
             using (var context = ContextFactory.StartNewContext())
             {
-                var simpleEntity = new SimpleEntity { Name = "Foo" };
+                var simpleEntity = new Employee { Name = "Foo" };
                 context.Add(simpleEntity);
 
                 var query = new SimpleEntityQuery { NameLike = "F" };

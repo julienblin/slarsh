@@ -149,6 +149,22 @@
         }
 
         /// <summary>
+        /// Reloads the <paramref name="entity"/>.
+        /// </summary>
+        /// <param name="entity">
+        /// The entity.
+        /// </param>
+        public void Reload(IEntity entity)
+        {
+            if (!this.IsReady)
+            {
+                throw new SlarshException(Resources.ContextIsNotReady);
+            }
+
+            this.GetContextProviderFor(entity.GetType()).Reload(entity);
+        }
+
+        /// <summary>
         /// Gets an entity by its id.
         /// </summary>
         /// <param name="id">

@@ -6,17 +6,17 @@
 
     using Slarsh.NHibernate.Tests.Entities;
 
-    public class SimpleEntityQuery : NHQuery<SimpleEntity>
+    public class SimpleEntityQuery : NHQuery<Employee>
     {
         public string NameLike { get; set; }
 
-        protected override IQueryOver<SimpleEntity, SimpleEntity> BuildQueryOver(IContextProvider contextProvider, ISession session)
+        protected override IQueryOver<Employee, Employee> BuildQueryOver(IContextProvider contextProvider, ISession session)
         {
-            var query = session.QueryOver<SimpleEntity>();
+            var query = session.QueryOver<Employee>();
 
             if (!string.IsNullOrEmpty(this.NameLike))
             {
-                query.Where(Restrictions.InsensitiveLike(Projections.Property<SimpleEntity>(x => x.Name), this.NameLike, MatchMode.Anywhere));
+                query.Where(Restrictions.InsensitiveLike(Projections.Property<Employee>(x => x.Name), this.NameLike, MatchMode.Anywhere));
             }
 
             return query;

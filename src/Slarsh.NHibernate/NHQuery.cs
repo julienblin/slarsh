@@ -29,21 +29,6 @@
         }
 
         /// <summary>
-        /// Must be implemented to create the <see cref="IQueryOver{TRoot,TSubtype}"/> that will
-        /// be used by the final <see cref="IPreparedQuery{T}"/>.
-        /// </summary>
-        /// <param name="contextProvider">
-        /// The context provider.
-        /// </param>
-        /// <param name="session">
-        /// The session.
-        /// </param>
-        /// <returns>
-        /// The <see cref="IQueryOver"/>.
-        /// </returns>
-        protected abstract IQueryOver<T, T> BuildQueryOver(IContextProvider contextProvider, ISession session);
-
-        /// <summary>
         /// Builds the <see cref="IPreparedQuery{T}"/> by calling <see cref="BuildQueryOver"/>
         /// </summary>
         /// <param name="contextProvider">
@@ -59,5 +44,20 @@
         {
             return new PreparedQuery<T>(session, this.BuildQueryOver(contextProvider, session));
         }
+
+        /// <summary>
+        /// Must be implemented to create the <see cref="IQueryOver{TRoot,TSubtype}"/> that will
+        /// be used by the final <see cref="IPreparedQuery{T}"/>.
+        /// </summary>
+        /// <param name="contextProvider">
+        /// The context provider.
+        /// </param>
+        /// <param name="session">
+        /// The session.
+        /// </param>
+        /// <returns>
+        /// The <see cref="IQueryOver"/>.
+        /// </returns>
+        protected abstract IQueryOver<T, T> BuildQueryOver(IContextProvider contextProvider, ISession session);
     }
 }

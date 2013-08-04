@@ -10,7 +10,7 @@
 
         public Guid Execute(IContext context)
         {
-            var simpleEntity = new SimpleEntity { Name = this.Name };
+            var simpleEntity = new Employee { Name = this.Name };
             context.Add(simpleEntity);
             return simpleEntity.Id;
         }

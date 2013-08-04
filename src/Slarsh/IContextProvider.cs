@@ -25,6 +25,14 @@
         void Remove(IEntity entity);
 
         /// <summary>
+        /// Reloads the <paramref name="entity"/>.
+        /// </summary>
+        /// <param name="entity">
+        /// The entity.
+        /// </param>
+        void Reload(IEntity entity);
+
+        /// <summary>
         /// Gets an entity by its id.
         /// </summary>
         /// <param name="id">

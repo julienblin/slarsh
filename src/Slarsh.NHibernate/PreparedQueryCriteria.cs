@@ -6,14 +6,16 @@
 
     using global::NHibernate;
     using global::NHibernate.Criterion;
+    using global::NHibernate.Impl;
 
     /// <summary>
-    /// Default implementation of <see cref="IPreparedQuery{T}"/>.
+    /// Default implementation of <see cref="IPreparedQuery{T}"/> for the
+    /// NHibernate ICriteria API.
     /// </summary>
     /// <typeparam name="T">
     /// The type of result.
     /// </typeparam>
-    public class PreparedQuery<T> : IPreparedQuery<T>
+    public class PreparedQueryCriteria<T> : IPreparedQuery<T>
     {
         /// <summary>
         /// The NHibernate session.
@@ -21,9 +23,9 @@
         private readonly ISession session;
 
         /// <summary>
-        /// The query over.
+        /// The criteria.
         /// </summary>
-        private readonly IQueryOver<T, T> queryOver;
+        private readonly ICriteria criteria;
 
         /// <summary>
         /// The fetch list.
@@ -36,18 +38,18 @@
         private readonly IList<OrderByPath> orderByList = new List<OrderByPath>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PreparedQuery{T}"/> class.
+        /// Initializes a new instance of the <see cref="PreparedQueryCriteria{T}"/> class.
         /// </summary>
         /// <param name="session">
         /// The session.
         /// </param>
-        /// <param name="queryOver">
-        /// The query over.
+        /// <param name="criteria">
+        /// The criteria.
         /// </param>
-        public PreparedQuery(ISession session, IQueryOver<T, T> queryOver)
+        public PreparedQueryCriteria(ISession session, ICriteria criteria)
         {
             this.session = session;
-            this.queryOver = queryOver;
+            this.criteria = criteria;
         }
 
         /// <summary>
@@ -117,10 +119,14 @@
                 paginationParams = new PaginationParams();
             }
 
-            var query = this.BuildFinalQueryOver();
-            var rowCount = query.ToRowCountQuery().FutureValue<int>();
+            var query = this.BuildFinalCriteria();
 
-            var items = query.Skip((paginationParams.CurrentPage - 1) * paginationParams.PageSize).Take(paginationParams.PageSize).Future();
+            var rowCount = ((ICriteria)query.Clone()).SetProjection(Projections.RowCount()).FutureValue<int>();
+
+            var items =
+                query.SetFirstResult((paginationParams.CurrentPage - 1) * paginationParams.PageSize)
+                     .SetMaxResults(paginationParams.PageSize)
+                     .Future<T>();
             return new PaginationResult<T>
             {
                 CurrentPage = paginationParams.CurrentPage,
@@ -140,7 +146,7 @@
         /// </returns>
         public virtual IEnumerable<T> List()
         {
-            return this.BuildFinalQueryOver().List<T>();
+            return this.BuildFinalCriteria().List<T>();
         }
 
         /// <summary>
@@ -151,7 +157,7 @@
         /// </returns>
         public virtual int Count()
         {
-            return this.BuildFinalQueryOver().RowCount();
+            return this.BuildFinalCriteria().SetProjection(Projections.RowCount()).UniqueResult<int>();
         }
 
         /// <summary>
@@ -162,7 +168,7 @@
         /// </returns>
         public virtual T SingleOrDefault()
         {
-            return this.BuildFinalQueryOver().SingleOrDefault<T>();
+            return this.BuildFinalCriteria().UniqueResult<T>();
         }
 
         /// <summary>
@@ -171,12 +177,12 @@
         /// <returns>
         /// The <see cref="IQueryOver"/>.
         /// </returns>
-        protected virtual IQueryOver<T, T> BuildFinalQueryOver()
+        protected virtual ICriteria BuildFinalCriteria()
         {
-            var result = this.queryOver.Clone();
+            var result = (ICriteria)this.criteria.Clone();
             foreach (var fetch in this.fetchList)
             {
-                result = result.Fetch(fetch).Eager;
+                result.SetFetchMode(ExpressionProcessor.FindMemberExpression(fetch.Body), FetchMode.Eager);
             }
 
             foreach (var orderByPath in this.orderByList)
@@ -186,10 +192,10 @@
                     switch (orderByPath.OrderType)
                     {
                         case OrderType.Asc:
-                            result.OrderBy(orderByPath.Path).Asc();
+                            result.AddOrder(Order.Asc(ExpressionProcessor.FindMemberExpression(orderByPath.Path)));
                             break;
                         case OrderType.Desc:
-                            result.OrderBy(orderByPath.Path).Desc();
+                            result.AddOrder(Order.Desc(ExpressionProcessor.FindMemberExpression(orderByPath.Path)));
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -200,10 +206,10 @@
                     switch (orderByPath.OrderType)
                     {
                         case OrderType.Asc:
-                            result.OrderBy(Projections.Property(orderByPath.PropertyName)).Asc();
+                            result.AddOrder(Order.Asc(orderByPath.PropertyName));
                             break;
                         case OrderType.Desc:
-                            result.OrderBy(Projections.Property(orderByPath.PropertyName)).Desc();
+                            result.AddOrder(Order.Desc(orderByPath.PropertyName));
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();

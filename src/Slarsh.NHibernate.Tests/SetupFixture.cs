@@ -25,7 +25,7 @@
                 {
                     DatabaseType = DatabaseType.SqLite,
                     ConnectionString = ConnectionString,
-                    MappingAssemblies = new[] { typeof(SimpleEntity).Assembly },
+                    MappingAssemblies = new[] { typeof(Employee).Assembly },
                     AutoUpdateSchemaOnStart = true,
                     NHProperties = new Dictionary<string, string>
                         {

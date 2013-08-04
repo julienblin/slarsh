@@ -21,7 +21,7 @@
         /// <returns>
         /// The <see cref="PreparedQuery{T}"/>.
         /// </returns>
-        PreparedQuery<T> Fetch(Expression<Func<T, object>> path);
+        IPreparedQuery<T> Fetch(Expression<Func<T, object>> path);
 
         /// <summary>
         /// Adds an order by.
@@ -35,7 +35,7 @@
         /// <returns>
         /// The <see cref="PreparedQuery{T}"/>.
         /// </returns>
-        PreparedQuery<T> OrderBy(Expression<Func<T, object>> path, OrderType orderType = OrderType.Asc);
+        IPreparedQuery<T> OrderBy(Expression<Func<T, object>> path, OrderType orderType = OrderType.Asc);
 
         /// <summary>
         /// Adds an order by.
@@ -49,7 +49,7 @@
         /// <returns>
         /// The <see cref="PreparedQuery{T}"/>.
         /// </returns>
-        PreparedQuery<T> OrderBy(string path, OrderType orderType = OrderType.Asc);
+        IPreparedQuery<T> OrderBy(string path, OrderType orderType = OrderType.Asc);
 
         /// <summary>
         /// Runs the query and returns paginated results.

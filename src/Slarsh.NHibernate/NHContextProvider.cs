@@ -104,6 +104,18 @@
         }
 
         /// <summary>
+        /// Reloads the <paramref name="entity"/>.
+        /// </summary>
+        /// <param name="entity">
+        /// The entity.
+        /// </param>
+        public void Reload(IEntity entity)
+        {
+            Debug.Assert(this.session != null, "this.session != null");
+            this.session.Refresh(entity);
+        }
+
+        /// <summary>
         /// Gets an entity by its id.
         /// </summary>
         /// <param name="id">
