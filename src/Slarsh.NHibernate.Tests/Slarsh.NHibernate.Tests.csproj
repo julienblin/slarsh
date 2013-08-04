@@ -75,6 +75,7 @@
     <Compile Include="AsyncTest.cs" />
     <Compile Include="Commands\CreateSimpleEntityCommand.cs" />
     <Compile Include="Entities\SimpleEntity.cs" />
+    <Compile Include="NHSiameseQueryTest.cs" />
     <Compile Include="SetupFixture.cs" />
     <Compile Include="Mappings\SimpleEntityMap.cs" />
     <Compile Include="NHContextProviderFactoryTest.cs" />

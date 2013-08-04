@@ -104,5 +104,14 @@ namespace Slarsh.NHibernate {
                 return ResourceManager.GetString("SessionOpened", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to interpret siamese request for {0} = {1}..
+        /// </summary>
+        internal static string UnableToInterpreteSiameseSetMember {
+            get {
+                return ResourceManager.GetString("UnableToInterpreteSiameseSetMember", resourceCulture);
+            }
+        }
     }
 }

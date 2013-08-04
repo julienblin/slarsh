@@ -132,4 +132,7 @@
   <data name="SessionOpened" xml:space="preserve">
     <value>Session {0} opened.</value>
   </data>
+  <data name="UnableToInterpreteSiameseSetMember" xml:space="preserve">
+    <value>Unable to interpret siamese request for {0} = {1}.</value>
+  </data>
 </root>

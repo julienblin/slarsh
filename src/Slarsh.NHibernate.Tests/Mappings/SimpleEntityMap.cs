@@ -9,6 +9,7 @@
         public SimpleEntityMap()
         {
             this.Map(x => x.Name);
+            this.Map(x => x.Age);
         }
     }
 }
