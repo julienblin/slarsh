@@ -135,7 +135,7 @@
   <data name="UnableToFindPropertyOnType" xml:space="preserve">
     <value>Unable to find a property named {0} on type {1}.</value>
   </data>
-  <data name="UnableToInterpreteSiameseSetMember" xml:space="preserve">
-    <value>Unable to interpret siamese request for {0} = {1}.</value>
+  <data name="UnableToProcessDynamicQuery" xml:space="preserve">
+    <value>Unable to process dynamic query {0}.{1}.</value>
   </data>
 </root>

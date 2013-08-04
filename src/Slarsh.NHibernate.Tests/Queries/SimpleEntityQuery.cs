@@ -6,7 +6,7 @@
 
     using Slarsh.NHibernate.Tests.Entities;
 
-    public class SimpleEntityQuery : NHQuery<Employee>
+    public class SimpleEntityQuery : NHQueryQueryOver<Employee>
     {
         public string NameLike { get; set; }
 

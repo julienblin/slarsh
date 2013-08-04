@@ -15,17 +15,6 @@
 
     public class MvcApplication : System.Web.HttpApplication, ISlarshWebApplication
     {
-        protected void Application_Start()
-        {
-            AreaRegistration.RegisterAllAreas();
-
-            WebApiConfig.Register(GlobalConfiguration.Configuration);
-            FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
-            RouteConfig.RegisterRoutes(RouteTable.Routes);
-
-            ControllerBuilder.Current.SetControllerFactory(new CurrentContextControllerFactory());
-        }
-
         public ContextFactoryConfiguration GetContextFactoryConfiguration()
         {
             return new ContextFactoryConfiguration(
@@ -40,6 +29,17 @@
                     {
                         CurrentContextHolder = new WebCurrentContextHolder()
                     };
+        }
+
+        protected void Application_Start()
+        {
+            AreaRegistration.RegisterAllAreas();
+
+            WebApiConfig.Register(GlobalConfiguration.Configuration);
+            FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
+            RouteConfig.RegisterRoutes(RouteTable.Routes);
+
+            ControllerBuilder.Current.SetControllerFactory(new CurrentContextControllerFactory());
         }
     }
 }

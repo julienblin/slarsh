@@ -8,8 +8,8 @@
     {
         public EmployeeMap()
         {
-            Map(x => x.FirstName);
-            Map(x => x.LastName);
+            this.Map(x => x.FirstName);
+            this.Map(x => x.LastName);
         }
     }
 }

@@ -1,5 +1,10 @@
 ﻿namespace Slarsh.NHibernate
 {
+    using System.Diagnostics.CodeAnalysis;
+
+    /// <summary>
+    /// Base class for NHibernate managed entities.
+    /// </summary>
     public abstract class NHEntity : IEntity
     {
     }
@@ -10,6 +15,7 @@
     /// <typeparam name="TId">
     /// The type of ids.
     /// </typeparam>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed. Suppression is OK here.")]
     public abstract class NHEntity<TId> : NHEntity
     {
 #pragma warning disable 649

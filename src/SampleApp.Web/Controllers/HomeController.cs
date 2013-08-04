@@ -13,7 +13,7 @@
         public ActionResult Index(EmployeeQuery query, PaginationParams pagination)
         {
             var result = Context.Fulfill(query).Paginate(pagination);
-            return View(result);
+            return this.View(result);
         }
     }
 }

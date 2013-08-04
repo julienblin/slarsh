@@ -59,7 +59,7 @@
         /// The path.
         /// </param>
         /// <returns>
-        /// The <see cref="PreparedQuery{T}"/>.
+        /// The <see cref="PreparedQueryQueryOver{T}"/>.
         /// </returns>
         public virtual IPreparedQuery<T> Fetch(Expression<Func<T, object>> path)
         {
@@ -77,7 +77,7 @@
         /// The order type.
         /// </param>
         /// <returns>
-        /// The <see cref="PreparedQuery{T}"/>.
+        /// The <see cref="PreparedQueryQueryOver{T}"/>.
         /// </returns>
         public virtual IPreparedQuery<T> OrderBy(Expression<Func<T, object>> path, OrderType orderType = OrderType.Asc)
         {
@@ -95,7 +95,7 @@
         /// The order type.
         /// </param>
         /// <returns>
-        /// The <see cref="PreparedQuery{T}"/>.
+        /// The <see cref="PreparedQueryQueryOver{T}"/>.
         /// </returns>
         public virtual IPreparedQuery<T> OrderBy(string path, OrderType orderType = OrderType.Asc)
         {

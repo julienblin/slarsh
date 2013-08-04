@@ -8,7 +8,7 @@
     using Slarsh;
     using Slarsh.NHibernate;
 
-    public class EmployeeQuery : NHQuery<Employee>
+    public class EmployeeQuery : NHQueryQueryOver<Employee>
     {
         public string FirstNameLike { get; set; }
 
@@ -18,11 +18,17 @@
         {
             var query = session.QueryOver<Employee>();
 
-            if (!string.IsNullOrEmpty(FirstNameLike))
+            if (!string.IsNullOrEmpty(this.FirstNameLike))
+            {
                 query.Where(Restrictions.InsensitiveLike(Projections.Property<Employee>(x => x.FirstName), this.FirstNameLike, MatchMode.Anywhere));
+            }
 
-            if (!string.IsNullOrEmpty(LastNameLike))
-                query.Where(Restrictions.InsensitiveLike(Projections.Property<Employee>(x => x.LastName), this.LastNameLike, MatchMode.Anywhere));
+            if (!string.IsNullOrEmpty(this.LastNameLike))
+            {
+                query.Where(
+                    Restrictions.InsensitiveLike(
+                        Projections.Property<Employee>(x => x.LastName), this.LastNameLike, MatchMode.Anywhere));
+            }
 
             return query;
         }

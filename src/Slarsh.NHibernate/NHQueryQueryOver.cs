@@ -3,12 +3,12 @@
     using global::NHibernate;
 
     /// <summary>
-    /// Base class for NHibernate queries.
+    /// Base class for NHibernate queries based on <see cref="IQueryOver{TRoot,TSubtype}"/>.
     /// </summary>
     /// <typeparam name="T">
     /// The type of result.
     /// </typeparam>
-    public abstract class NHQuery<T> : IQuery<IPreparedQuery<T>>, INHQuery
+    public abstract class NHQueryQueryOver<T> : IQuery<IPreparedQuery<T>>, INHQuery
     {
         /// <summary>
         /// Fulfills the query - call by the NHibernate <see cref="IContextProvider"/>.
@@ -42,7 +42,7 @@
         /// </returns>
         protected virtual IPreparedQuery<T> BuildPreparedQuery(IContextProvider contextProvider, ISession session)
         {
-            return new PreparedQuery<T>(session, this.BuildQueryOver(contextProvider, session));
+            return new PreparedQueryQueryOver<T>(session, this.BuildQueryOver(contextProvider, session));
         }
 
         /// <summary>

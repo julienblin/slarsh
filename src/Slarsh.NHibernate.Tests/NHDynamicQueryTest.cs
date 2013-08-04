@@ -4,11 +4,11 @@
 
     using FluentAssertions;
 
+    using global::NHibernate.Criterion;
+
     using NUnit.Framework;
 
     using Slarsh.NHibernate.Tests.Entities;
-
-    using global::NHibernate.Criterion;
 
     [TestFixture]
     public class NHDynamicQueryTest
@@ -81,6 +81,32 @@
                 dynamic query = new NHDynamicQuery<Employee>();
                 query.Vacancies.StartDate.Gt(now.AddDays(-1));
                 query.Vacancies.EndDate.Lt(now.AddDays(6));
+
+                context.Fulfill((NHDynamicQuery<Employee>)query).Count().Should().Be(1);
+            }
+        }
+
+        [Test]
+        public void It_should_handle_references()
+        {
+            using (var context = ContextFactory.StartNewContext())
+            {
+                var boss = new Employee { Name = "The Boss." };
+                context.Add(boss);
+
+                var subordinate = new Employee { Name = "subordinate", Boss = boss };
+                context.Add(subordinate);
+
+                context.Add(new Employee { Name = "another one" });
+
+                dynamic query = new NHDynamicQuery<Employee>();
+                query.Boss.IsNotNull();
+
+                context.Fulfill((NHDynamicQuery<Employee>)query).Count().Should().Be(1);
+
+                query = new NHDynamicQuery<Employee>();
+                query.Boss.Name.Eq("The Boss.");
+                query.Boss.Boss.IsNull();
 
                 context.Fulfill((NHDynamicQuery<Employee>)query).Count().Should().Be(1);
             }

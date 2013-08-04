@@ -115,11 +115,11 @@ namespace Slarsh.NHibernate {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to interpret siamese request for {0} = {1}..
+        ///   Looks up a localized string similar to Unable to process dynamic query {0}.{1}..
         /// </summary>
-        internal static string UnableToInterpreteSiameseSetMember {
+        internal static string UnableToProcessDynamicQuery {
             get {
-                return ResourceManager.GetString("UnableToInterpreteSiameseSetMember", resourceCulture);
+                return ResourceManager.GetString("UnableToProcessDynamicQuery", resourceCulture);
             }
         }
     }

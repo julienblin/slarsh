@@ -13,6 +13,8 @@
             this.Map(x => x.Name);
             this.Map(x => x.Age);
 
+            this.References(x => x.Boss).Cascade.None();
+
             this.HasMany(x => x.Vacancies)
                .AsSet()
                .Inverse()

@@ -8,12 +8,12 @@
     using global::NHibernate.Criterion;
 
     /// <summary>
-    /// Default implementation of <see cref="IPreparedQuery{T}"/>.
+    /// Implementation of <see cref="IPreparedQuery{T}"/> for <see cref="IQueryOver{TRoot,Tsubtype}"/>.
     /// </summary>
     /// <typeparam name="T">
     /// The type of result.
     /// </typeparam>
-    public class PreparedQuery<T> : IPreparedQuery<T>
+    public class PreparedQueryQueryOver<T> : IPreparedQuery<T>
     {
         /// <summary>
         /// The NHibernate session.
@@ -36,7 +36,7 @@
         private readonly IList<OrderByPath> orderByList = new List<OrderByPath>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PreparedQuery{T}"/> class.
+        /// Initializes a new instance of the <see cref="PreparedQueryQueryOver{T}"/> class.
         /// </summary>
         /// <param name="session">
         /// The session.
@@ -44,7 +44,7 @@
         /// <param name="queryOver">
         /// The query over.
         /// </param>
-        public PreparedQuery(ISession session, IQueryOver<T, T> queryOver)
+        public PreparedQueryQueryOver(ISession session, IQueryOver<T, T> queryOver)
         {
             this.session = session;
             this.queryOver = queryOver;
@@ -57,7 +57,7 @@
         /// The path.
         /// </param>
         /// <returns>
-        /// The <see cref="PreparedQuery{T}"/>.
+        /// The <see cref="PreparedQueryQueryOver{T}"/>.
         /// </returns>
         public virtual IPreparedQuery<T> Fetch(Expression<Func<T, object>> path)
         {
@@ -75,7 +75,7 @@
         /// The order type.
         /// </param>
         /// <returns>
-        /// The <see cref="PreparedQuery{T}"/>.
+        /// The <see cref="PreparedQueryQueryOver{T}"/>.
         /// </returns>
         public virtual IPreparedQuery<T> OrderBy(Expression<Func<T, object>> path, OrderType orderType = OrderType.Asc)
         {
@@ -93,7 +93,7 @@
         /// The order type.
         /// </param>
         /// <returns>
-        /// The <see cref="PreparedQuery{T}"/>.
+        /// The <see cref="PreparedQueryQueryOver{T}"/>.
         /// </returns>
         public virtual IPreparedQuery<T> OrderBy(string path, OrderType orderType = OrderType.Asc)
         {

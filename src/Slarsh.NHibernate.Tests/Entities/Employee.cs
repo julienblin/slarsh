@@ -16,17 +16,14 @@
 
         public virtual int? Age { get; set; }
 
+        public virtual Employee Boss { get; set; }
+
         public virtual IEnumerable<Vacancy> Vacancies
         {
             get
             {
                 return this.vacancies;
             }
-        }
-
-        public virtual void AddVacancy(Vacancy vacancy)
-        {
-            
         }
     }
 }

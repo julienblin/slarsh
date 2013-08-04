@@ -78,6 +78,8 @@
     <Compile Include="Entities\Vacancy.cs" />
     <Compile Include="Mappings\VacancyMap.cs" />
     <Compile Include="NHDynamicQueryTest.cs" />
+    <Compile Include="NHQuerySqlTest.cs" />
+    <Compile Include="Queries\SqlQuery.cs" />
     <Compile Include="SetupFixture.cs" />
     <Compile Include="Mappings\EmployeeMap.cs" />
     <Compile Include="NHContextProviderFactoryTest.cs" />
